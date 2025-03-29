@@ -1,0 +1,55 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "digilocal-go-digital-in-minute",
+          "appId": "1:289627400479:android:0e56eba2ae52683e16a82a",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "digilocal-go-digital-in-minute",
+          "appId": "1:289627400479:ios:a2b5999b00d8691f16a82a",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "macos": {
+        "default": {
+          "projectId": "digilocal-go-digital-in-minute",
+          "appId": "1:289627400479:ios:a2b5999b00d8691f16a82a",
+          "uploadDebugSymbols": false,
+          "fileOutput": "macos/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "digilocal-go-digital-in-minute",
+          "configurations": {
+            "android": "1:289627400479:android:0e56eba2ae52683e16a82a",
+            "ios": "1:289627400479:ios:a2b5999b00d8691f16a82a",
+            "macos": "1:289627400479:ios:a2b5999b00d8691f16a82a",
+            "web": "1:289627400479:web:f37294f6be0b81ed16a82a",
+            "windows": "1:289627400479:web:c6bd359fe99f440116a82a"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
