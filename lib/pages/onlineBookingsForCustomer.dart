@@ -147,32 +147,11 @@ class _OnlineBookingsForCustomerState extends State<OnlineBookingsForCustomer> {
                             style: GoogleFonts.blinker(color: Colors.black54, fontSize: 17, fontWeight: FontWeight.w600),
                           ),
                           SizedBox(height: 8),
-                          booking["status"] == "Pending"
-                              ? Row(
-                            children: [
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green,
-                                  foregroundColor: Colors.white,
-                                ),
-                                onPressed: () => _updateBookingStatus(booking["id"], "Available"),
-                                child: Text("Available"),
-                              ),
-                              SizedBox(width: 10),
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red,
-                                  foregroundColor: Colors.white,
-                                ),
-                                onPressed: () => _updateBookingStatus(booking["id"], "Sold"),
-                                child: Text("Sold"),
-                              ),
-                            ],
-                          )
-                              : Text(
+                          Text(
                             "Status: ${booking["status"]}",
                             style: GoogleFonts.blinker(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.white),
                           ),
+
                         ],
                       ),
                     ),
