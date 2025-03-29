@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:digilocal/pages/requestPage.dart';
@@ -6,11 +8,16 @@ import 'package:url_launcher/url_launcher.dart';
 import 'edituserdatapage.dart';
 import 'fullscreenimageview.dart';
 
-class UserDataPageForAll extends StatelessWidget {
+class UserDataPageForAll extends StatefulWidget {
   final Map<String, dynamic> userData;
 
   UserDataPageForAll({required this.userData});
 
+  @override
+  State<UserDataPageForAll> createState() => _UserDataPageForAllState();
+}
+
+class _UserDataPageForAllState extends State<UserDataPageForAll> {
   Widget _buildStatCard(String title, String value) {
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -59,12 +66,14 @@ class UserDataPageForAll extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Handle null fields
-    List<dynamic> skills = userData["services"] ?? [];
-    List<dynamic> tools = userData["coupons"] ?? [];
-    List<dynamic> softSkills = userData["products"] ?? [];
-    List<dynamic> achievements = userData["Events"] ?? [];
-    List<dynamic> experiences = userData["Offers"] ?? [];
-    List<dynamic> projects = userData["Products"] ?? [];
+    List<dynamic> skills = widget.userData["services"] ?? [];
+    List<dynamic> tools = widget.userData["coupons"] ?? [];
+    List<dynamic> softSkills = widget.userData["products"] ?? [];
+    List<dynamic> achievements = widget.userData["Events"] ?? [];
+    List<dynamic> experiences = widget.userData["Offers"] ?? [];
+    List<dynamic> projects = widget.userData["Products"] ?? [];
+
+    bool isBooked = false; // Define the variable
 
     void _launchURL(String url) async {
       if (url.isNotEmpty) {
@@ -101,13 +110,13 @@ class UserDataPageForAll extends StatelessWidget {
                   showDialog(
                     context: context,
                     builder: (context) => FullScreenImageView(
-                      imageUrl: userData["shopInfo"]["shopImage"],
+                      imageUrl: widget.userData["shopInfo"]["shopImage"],
                     ),
                   );
                 },
                 child: CircleAvatar(
                   radius: 60,
-                  backgroundImage: NetworkImage(userData["shopInfo"]["shopImage"]),
+                  backgroundImage: NetworkImage(widget.userData["shopInfo"]["shopImage"]),
                 ),
               ),
             ),
@@ -118,7 +127,7 @@ class UserDataPageForAll extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  userData["shopInfo"]["shopName"],
+                  widget.userData["shopInfo"]["shopName"],
                   style: GoogleFonts.blinker(fontSize: 34, fontWeight: FontWeight.bold, color: Colors.black),
                 ),
               ],
@@ -128,7 +137,7 @@ class UserDataPageForAll extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  userData["subCategory"],
+                  widget.userData["subCategory"],
                   style: GoogleFonts.blinker(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.grey[700]),
                 ),
               ],
@@ -142,7 +151,7 @@ class UserDataPageForAll extends StatelessWidget {
             ),
             SizedBox(height: 10),
             Text(
-              userData["shopInfo"]["address"],
+              widget.userData["shopInfo"]["address"],
               style: GoogleFonts.blinker(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.grey[700]),
             ),
             SizedBox(height: 20),
@@ -163,18 +172,18 @@ class UserDataPageForAll extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      _buildStatCard("Products Category", "${userData["NoofProducts"]}"),
+                      _buildStatCard("Products Category", "${widget.userData["NoofProducts"]}"),
                       SizedBox(width: 25),
-                      _buildStatCard("Shop Timings", "${userData["ShopTimings"]}"),
+                      _buildStatCard("Shop Timings", "${widget.userData["ShopTimings"]}"),
                     ],
                   ),
                   SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      _buildStatCard("Years of Experience", "${userData["yearsofExperience"]}"),
+                      _buildStatCard("Years of Experience", "${widget.userData["yearsofExperience"]}"),
                       SizedBox(width: 25),
-                      _buildStatCard("Google Rating", "${userData["googleRating"]}+"),
+                      _buildStatCard("Google Rating", "${widget.userData["googleRating"]}+"),
                     ],
                   ),
                 ],
@@ -336,41 +345,110 @@ class UserDataPageForAll extends StatelessWidget {
                                   //     padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                                   //   ),
                                   // ),
-                                  ElevatedButton.icon(
-                                    onPressed: () {
-                                      // Retrieve the shop's WhatsApp number from userData (shopInfo)
-                                      String shopContact = userData["shopInfo"]["ContactNo"] ?? "";
-                                      if (shopContact.isEmpty) {
-                                        print("Shop contact number is not available.");
-                                        return;
-                                      }
-
-                                      // Build the message with product details
-                                      String message = "I am intrested to buy this, plz book for me\n"
-                                          "Product Name: ${project["title"] ?? "No Title"}\n"
-                                          "Price: ${project["productprice"] ?? "No Price"}\n"
-                                          "Image: ${project["image"] ?? "No Image"}";
-
-                                      // Construct WhatsApp URL using wa.me API
-                                      String whatsappUrl = "https://wa.me/$shopContact?text=${Uri.encodeComponent(message)}";
-
-                                      // Launch WhatsApp with the prepared URL
-                                      _launchURL(whatsappUrl);
-                                    },
-                                    icon: Icon(Icons.code, color: Colors.grey[300]),
-                                    label: Text(
-                                      "Book Now",
-                                      style: GoogleFonts.blinker(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[300]),
-                                    ),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.black,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(100),
-                                      ),
-                                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                                    ),
-                                  ),
+                                  //whatsapp messaging....
                                   // ElevatedButton.icon(
+                                  //   onPressed: () {
+                                  //     // Retrieve the shop's WhatsApp number from userData (shopInfo)
+                                  //     String shopContact = userData["shopInfo"]["ContactNo"] ?? "";
+                                  //     if (shopContact.isEmpty) {
+                                  //       print("Shop contact number is not available.");
+                                  //       return;
+                                  //     }
+                                  //
+                                  //     // Build the message with product details
+                                  //     String message = "I am intrested to buy this, plz book for me\n"
+                                  //         "Product Name: ${project["title"] ?? "No Title"}\n"
+                                  //         "Price: ${project["productprice"] ?? "No Price"}\n"
+                                  //         "Image: ${project["image"] ?? "No Image"}";
+                                  //
+                                  //     // Construct WhatsApp URL using wa.me API
+                                  //     String whatsappUrl = "https://wa.me/$shopContact?text=${Uri.encodeComponent(message)}";
+                                  //
+                                  //     // Launch WhatsApp with the prepared URL
+                                  //     _launchURL(whatsappUrl);
+                                  //   },
+                                  //   icon: Icon(Icons.code, color: Colors.grey[300]),
+                                  //   label: Text(
+                                  //     "Book Now",
+                                  //     style: GoogleFonts.blinker(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[300]),
+                                  //   ),
+                                  //   style: ElevatedButton.styleFrom(
+                                  //     backgroundColor: Colors.black,
+                                  //     shape: RoundedRectangleBorder(
+                                  //       borderRadius: BorderRadius.circular(100),
+                                  //     ),
+                                  //     padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                  //   ),
+                                  // ),
+                                  ElevatedButton.icon(
+                                  onPressed: () async {
+                    // Retrieve the shop's email from userData (shopInfo)
+                    String shopEmail = widget.userData["shopInfo"]["shopEmail"] ?? "";
+                    if (shopEmail.isEmpty) {
+                    print("Shop contact email is not available.");
+                    return;
+                    }
+
+                    // Get the current logged-in user's email
+                    User? user = FirebaseAuth.instance.currentUser;
+                    String customerEmail = user?.email ?? "No Email";
+
+                    // Prepare data to store in "online Bookings"
+                    Map<String, dynamic> bookingData = {
+                    "productName": project["title"] ?? "No Title",
+                    "productPrice": project["productprice"] ?? "No Price",
+                    "itemLeft": project["itemLeft"] ?? "No itemLeft",
+                    "productImage": project["image"] ?? "No Image",
+                    "shopEmail": shopEmail,
+                    "customerEmail": customerEmail,
+                    };
+
+                    // Generate a unique booking ID
+                    DatabaseReference dbRef = FirebaseDatabase.instance.ref().child("online Bookings").push();
+
+                    try {
+                    // Store the booking data in the Realtime Database
+                    await dbRef.set(bookingData);
+
+                    // Show Snackbar on successful booking
+                    ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                    content: Text("Product Booked Successfully...."),
+                    backgroundColor: Colors.green,
+                    duration: Duration(seconds: 3),
+                    ),
+                    );
+
+                    print("Booking saved successfully!");
+                    } catch (e) {
+                    print("Error saving booking: $e");
+
+                    // Show Snackbar for failure
+                    ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                    content: Text("Failed to book product. Try again."),
+                    backgroundColor: Colors.red,
+                    duration: Duration(seconds: 3),
+                    ),
+                    );
+                    }
+                    },
+                      icon: Icon(Icons.code, color: Colors.grey[300]),
+                      label: Text(
+                        "Book Now",
+                        style: GoogleFonts.blinker(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[300]),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      ),
+                    ),
+
+
+                    // ElevatedButton.icon(
                                   //   onPressed: () {
                                   //     final url = project["projectyoutubelink"] ?? "";
                                   //     _launchURL(url);
@@ -537,7 +615,7 @@ class UserDataPageForAll extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => RequestPage(userId: userData["accountLinks"]["email"]),
+                        builder: (context) => RequestPage(userId: widget.userData["accountLinks"]["email"]),
                       ),
                     );
                   },

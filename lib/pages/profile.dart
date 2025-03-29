@@ -1,3 +1,4 @@
+import 'package:digilocal/pages/onlineBookingForSHop.dart';
 import 'package:digilocal/pages/shopListPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -183,6 +184,32 @@ class _ProfilePageState extends State<ProfilePage> {
                 //       color: Colors.deepOrangeAccent),
                 // ),
                 // SizedBox(height: 20),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => OnlineBookingsForShop()),
+                    );
+                  },
+                  child: Card(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    elevation: 5,
+                    color: Colors.blue,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Center(
+                        child: Text(
+                          "Online Bookings",
+                          style: GoogleFonts.blinker(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 5),
                 GestureDetector(
                   onTap: () {
                     Navigator.push(
