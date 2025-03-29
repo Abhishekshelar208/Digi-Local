@@ -6,18 +6,11 @@ import 'package:url_launcher/url_launcher.dart';
 import 'edituserdatapage.dart';
 import 'fullscreenimageview.dart';
 
-class UserDataPageForAll extends StatefulWidget {
+class UserDataPageForAll extends StatelessWidget {
   final Map<String, dynamic> userData;
 
   UserDataPageForAll({required this.userData});
 
-  @override
-  State<UserDataPageForAll> createState() => _UserDataPageForAllState();
-}
-
-
-
-class _UserDataPageForAllState extends State<UserDataPageForAll> {
   Widget _buildStatCard(String title, String value) {
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -63,41 +56,15 @@ class _UserDataPageForAllState extends State<UserDataPageForAll> {
 
   }
 
-  List<Map<String, dynamic>> projects = [
-    {
-      "image": "https://example.com/image.jpg",
-      "title": "Sample Project",
-      "description": "This is a sample description.",
-      "productprice": "\$99",
-      "purchaseLink": "https://example.com/buy",
-      "likes": 0,
-      "dislikes": 0,
-    },
-  ];
-
-
-  void _incrementLikes(int index) {
-    setState(() {
-      projects[index]["likes"]++;
-    });
-  }
-
-  void _incrementDislikes(int index) {
-    setState(() {
-      projects[index]["dislikes"]++;
-    });
-  }
-
-
   @override
   Widget build(BuildContext context) {
     // Handle null fields
-    List<dynamic> skills = widget.userData["services"] ?? [];
-    List<dynamic> tools = widget.userData["coupons"] ?? [];
-    List<dynamic> softSkills = widget.userData["products"] ?? [];
-    List<dynamic> achievements = widget.userData["Events"] ?? [];
-    List<dynamic> experiences = widget.userData["Offers"] ?? [];
-    List<dynamic> projects = widget.userData["Products"] ?? [];
+    List<dynamic> skills = userData["services"] ?? [];
+    List<dynamic> tools = userData["coupons"] ?? [];
+    List<dynamic> softSkills = userData["products"] ?? [];
+    List<dynamic> achievements = userData["Events"] ?? [];
+    List<dynamic> experiences = userData["Offers"] ?? [];
+    List<dynamic> projects = userData["Products"] ?? [];
 
     void _launchURL(String url) async {
       if (url.isNotEmpty) {
@@ -134,13 +101,13 @@ class _UserDataPageForAllState extends State<UserDataPageForAll> {
                   showDialog(
                     context: context,
                     builder: (context) => FullScreenImageView(
-                      imageUrl: widget.userData["shopInfo"]["shopImage"],
+                      imageUrl: userData["shopInfo"]["shopImage"],
                     ),
                   );
                 },
                 child: CircleAvatar(
                   radius: 60,
-                  backgroundImage: NetworkImage(widget.userData["shopInfo"]["shopImage"]),
+                  backgroundImage: NetworkImage(userData["shopInfo"]["shopImage"]),
                 ),
               ),
             ),
@@ -151,7 +118,7 @@ class _UserDataPageForAllState extends State<UserDataPageForAll> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  widget.userData["shopInfo"]["shopName"],
+                  userData["shopInfo"]["shopName"],
                   style: GoogleFonts.blinker(fontSize: 34, fontWeight: FontWeight.bold, color: Colors.black),
                 ),
               ],
@@ -161,7 +128,7 @@ class _UserDataPageForAllState extends State<UserDataPageForAll> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  widget.userData["subCategory"],
+                  userData["subCategory"],
                   style: GoogleFonts.blinker(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.grey[700]),
                 ),
               ],
@@ -175,7 +142,7 @@ class _UserDataPageForAllState extends State<UserDataPageForAll> {
             ),
             SizedBox(height: 10),
             Text(
-              widget.userData["shopInfo"]["address"],
+              userData["shopInfo"]["address"],
               style: GoogleFonts.blinker(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.grey[700]),
             ),
             SizedBox(height: 20),
@@ -196,18 +163,18 @@ class _UserDataPageForAllState extends State<UserDataPageForAll> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      _buildStatCard("Products Category", "${widget.userData["NoofProducts"]}"),
+                      _buildStatCard("Products Category", "${userData["NoofProducts"]}"),
                       SizedBox(width: 25),
-                      _buildStatCard("Shop Timings", "${widget.userData["ShopTimings"]}"),
+                      _buildStatCard("Shop Timings", "${userData["ShopTimings"]}"),
                     ],
                   ),
                   SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      _buildStatCard("Years of Experience", "${widget.userData["yearsofExperience"]}"),
+                      _buildStatCard("Years of Experience", "${userData["yearsofExperience"]}"),
                       SizedBox(width: 25),
-                      _buildStatCard("Google Rating", "${widget.userData["googleRating"]}+"),
+                      _buildStatCard("Google Rating", "${userData["googleRating"]}+"),
                     ],
                   ),
                 ],
@@ -274,126 +241,6 @@ class _UserDataPageForAllState extends State<UserDataPageForAll> {
               style: GoogleFonts.blinker(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
             ),
             SizedBox(height: 10),
-            // SizedBox(
-            //   height: 450,
-            //   child: ListView.builder(
-            //     scrollDirection: Axis.horizontal,
-            //     itemCount: projects.length,
-            //     itemBuilder: (context, index) {
-            //       var project = projects[index];
-            //       return Container(
-            //         width: 300,
-            //         margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
-            //         child: Card(
-            //           color: Colors.white,
-            //           elevation: 4,
-            //           shape: RoundedRectangleBorder(
-            //             borderRadius: BorderRadius.circular(20),
-            //           ),
-            //           child: Padding(
-            //             padding: const EdgeInsets.all(12.0),
-            //             child: SingleChildScrollView(
-            //               child: Column(
-            //                 crossAxisAlignment: CrossAxisAlignment.start,
-            //                 children: [
-            //                   // Image at the top
-            //                   if (project["image"] != null && project["image"].isNotEmpty)
-            //                     GestureDetector(
-            //                       onTap: () {
-            //                         showDialog(
-            //                           context: context,
-            //                           builder: (context) => FullScreenImageView(imageUrl: project["image"]),
-            //                         );
-            //                       },
-            //                       child: ClipRRect(
-            //                         borderRadius: BorderRadius.circular(12),
-            //                         child: Image.network(
-            //                           project["image"],
-            //                           width: double.infinity,
-            //                           height: 200,
-            //                           fit: BoxFit.cover,
-            //                           errorBuilder: (context, error, stackTrace) => Icon(
-            //                             Icons.image_not_supported,
-            //                             size: 50,
-            //                             color: Colors.grey,
-            //                           ),
-            //                         ),
-            //                       ),
-            //                     ),
-            //
-            //                   SizedBox(height: 8),
-            //                   // Title
-            //                   Text(
-            //                     project["title"] ?? "No Title",
-            //                     style: GoogleFonts.blinker(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
-            //                   ),
-            //                   SizedBox(height: 4),
-            //                   // Description
-            //                   Text(
-            //                     project["description"] ?? "No Description",
-            //                     style: GoogleFonts.blinker(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[600]),
-            //                   ),
-            //                   SizedBox(height: 4),
-            //                   // Description
-            //                   Text(
-            //                     project["productprice"] ?? "No productprice",
-            //                     style: GoogleFonts.blinker(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[600]),
-            //                   ),
-            //                   SizedBox(height: 8),
-            //                   SizedBox(height: 10),
-            //                   // Action buttons (GitHub & YouTube)
-            //                   Row(
-            //                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            //                     children: [
-            //                       ElevatedButton.icon(
-            //                         onPressed: () {
-            //                           final url = project["purchaseLink"] ?? "";
-            //                           _launchURL(url);
-            //                         },
-            //                         icon: Icon(Icons.code, color: Colors.grey[300]),
-            //                         label: Text(
-            //                           "Buy Now",
-            //                           style: GoogleFonts.blinker(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[300]),
-            //                         ),
-            //                         style: ElevatedButton.styleFrom(
-            //                           backgroundColor: Colors.black,
-            //                           shape: RoundedRectangleBorder(
-            //                             borderRadius: BorderRadius.circular(100),
-            //                           ),
-            //                           padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            //                         ),
-            //                       ),
-            //                       // ElevatedButton.icon(
-            //                       //   onPressed: () {
-            //                       //     final url = project["projectyoutubelink"] ?? "";
-            //                       //     _launchURL(url);
-            //                       //   },
-            //                       //   icon: Icon(Icons.video_library, color: Colors.grey[300]),
-            //                       //   label: Text(
-            //                       //     "YouTube",
-            //                       //     style: GoogleFonts.blinker(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[300]),
-            //                       //   ),
-            //                       //   style: ElevatedButton.styleFrom(
-            //                       //     backgroundColor: Colors.black,
-            //                       //     shape: RoundedRectangleBorder(
-            //                       //       borderRadius: BorderRadius.circular(100),
-            //                       //     ),
-            //                       //     padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            //                       //   ),
-            //                       // ),
-            //                     ],
-            //                   ),
-            //                   SizedBox(height: 20),
-            //                 ],
-            //               ),
-            //             ),
-            //           ),
-            //         ),
-            //       );
-            //     },
-            //   ),
-            // ),
-
             SizedBox(
               height: 450,
               child: ListView.builder(
@@ -412,68 +259,100 @@ class _UserDataPageForAllState extends State<UserDataPageForAll> {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (project["image"] != null && project["image"].isNotEmpty)
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: Image.network(
-                                  project["image"],
-                                  width: double.infinity,
-                                  height: 200,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) => Icon(
-                                    Icons.image_not_supported,
-                                    size: 50,
-                                    color: Colors.grey,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Image at the top
+                              if (project["image"] != null && project["image"].isNotEmpty)
+                                GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => FullScreenImageView(imageUrl: project["image"]),
+                                    );
+                                  },
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Image.network(
+                                      project["image"],
+                                      width: double.infinity,
+                                      height: 200,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) => Icon(
+                                        Icons.image_not_supported,
+                                        size: 50,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
                                   ),
                                 ),
+
+                              SizedBox(height: 8),
+                              // Title
+                              Text(
+                                project["title"] ?? "No Title",
+                                style: GoogleFonts.blinker(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
                               ),
-                            SizedBox(height: 8),
-                            Text(
-                              project["title"] ?? "No Title",
-                              style: GoogleFonts.blinker(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              project["description"] ?? "No Description",
-                              style: GoogleFonts.blinker(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[600]),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              project["productprice"] ?? "No productprice",
-                              style: GoogleFonts.blinker(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[600]),
-                            ),
-                            SizedBox(height: 10),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                ElevatedButton.icon(
-                                  onPressed: () => _incrementLikes(index),
-                                  icon: Icon(Icons.thumb_up, color: Colors.white),
-                                  label: Text("${project["likes"]}"),
-                                  style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                                ),
-                                ElevatedButton.icon(
-                                  onPressed: () => _incrementDislikes(index),
-                                  icon: Icon(Icons.thumb_down, color: Colors.white),
-                                  label: Text("${project["dislikes"]}"),
-                                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 10),
-                            ElevatedButton.icon(
-                              onPressed: () {
-                                final url = project["purchaseLink"] ?? "";
-                                _launchURL(url);
-                              },
-                              icon: Icon(Icons.shopping_cart, color: Colors.white),
-                              label: Text("Buy Now"),
-                              style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-                            ),
-                          ],
+                              SizedBox(height: 4),
+                              // Description
+                              Text(
+                                project["description"] ?? "No Description",
+                                style: GoogleFonts.blinker(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[600]),
+                              ),
+                              SizedBox(height: 4),
+                              // Description
+                              Text(
+                                project["productprice"] ?? "No productprice",
+                                style: GoogleFonts.blinker(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[600]),
+                              ),
+                              SizedBox(height: 8),
+                              SizedBox(height: 10),
+                              // Action buttons (GitHub & YouTube)
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  ElevatedButton.icon(
+                                    onPressed: () {
+                                      final url = project["purchaseLink"] ?? "";
+                                      _launchURL(url);
+                                    },
+                                    icon: Icon(Icons.code, color: Colors.grey[300]),
+                                    label: Text(
+                                      "Buy Now",
+                                      style: GoogleFonts.blinker(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[300]),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.black,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(100),
+                                      ),
+                                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                    ),
+                                  ),
+                                  // ElevatedButton.icon(
+                                  //   onPressed: () {
+                                  //     final url = project["projectyoutubelink"] ?? "";
+                                  //     _launchURL(url);
+                                  //   },
+                                  //   icon: Icon(Icons.video_library, color: Colors.grey[300]),
+                                  //   label: Text(
+                                  //     "YouTube",
+                                  //     style: GoogleFonts.blinker(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[300]),
+                                  //   ),
+                                  //   style: ElevatedButton.styleFrom(
+                                  //     backgroundColor: Colors.black,
+                                  //     shape: RoundedRectangleBorder(
+                                  //       borderRadius: BorderRadius.circular(100),
+                                  //     ),
+                                  //     padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                  //   ),
+                                  // ),
+                                ],
+                              ),
+                              SizedBox(height: 20),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -618,7 +497,7 @@ class _UserDataPageForAllState extends State<UserDataPageForAll> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => RequestPage(userId: widget.userData["accountLinks"]["email"]),
+                        builder: (context) => RequestPage(userId: userData["accountLinks"]["email"]),
                       ),
                     );
                   },
