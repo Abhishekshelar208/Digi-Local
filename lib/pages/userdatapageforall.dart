@@ -306,20 +306,60 @@ class UserDataPageForAll extends StatelessWidget {
                                 project["productprice"] ?? "No productprice",
                                 style: GoogleFonts.blinker(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[600]),
                               ),
+                              SizedBox(height: 4),
+                              // Description
+                              Text(
+                                "Item Left: ${project["itemLeft"] ?? "No itemLeft"}",
+                                style: GoogleFonts.blinker(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[600]),
+                              ),
                               SizedBox(height: 8),
                               SizedBox(height: 10),
                               // Action buttons (GitHub & YouTube)
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children: [
+                                  // ElevatedButton.icon(
+                                  //   onPressed: () {
+                                  //     final url = project["purchaseLink"] ?? "";
+                                  //     _launchURL(url);
+                                  //   },
+                                  //   icon: Icon(Icons.code, color: Colors.grey[300]),
+                                  //   label: Text(
+                                  //     "Book Now",
+                                  //     style: GoogleFonts.blinker(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[300]),
+                                  //   ),
+                                  //   style: ElevatedButton.styleFrom(
+                                  //     backgroundColor: Colors.black,
+                                  //     shape: RoundedRectangleBorder(
+                                  //       borderRadius: BorderRadius.circular(100),
+                                  //     ),
+                                  //     padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                  //   ),
+                                  // ),
                                   ElevatedButton.icon(
                                     onPressed: () {
-                                      final url = project["purchaseLink"] ?? "";
-                                      _launchURL(url);
+                                      // Retrieve the shop's WhatsApp number from userData (shopInfo)
+                                      String shopContact = userData["shopInfo"]["ContactNo"] ?? "";
+                                      if (shopContact.isEmpty) {
+                                        print("Shop contact number is not available.");
+                                        return;
+                                      }
+
+                                      // Build the message with product details
+                                      String message = "I am intrested to buy this, plz book for me\n"
+                                          "Product Name: ${project["title"] ?? "No Title"}\n"
+                                          "Price: ${project["productprice"] ?? "No Price"}\n"
+                                          "Image: ${project["image"] ?? "No Image"}";
+
+                                      // Construct WhatsApp URL using wa.me API
+                                      String whatsappUrl = "https://wa.me/$shopContact?text=${Uri.encodeComponent(message)}";
+
+                                      // Launch WhatsApp with the prepared URL
+                                      _launchURL(whatsappUrl);
                                     },
                                     icon: Icon(Icons.code, color: Colors.grey[300]),
                                     label: Text(
-                                      "Buy Now",
+                                      "Book Now",
                                       style: GoogleFonts.blinker(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[300]),
                                     ),
                                     style: ElevatedButton.styleFrom(

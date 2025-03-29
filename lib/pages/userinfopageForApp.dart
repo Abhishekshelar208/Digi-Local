@@ -65,7 +65,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
   TextEditingController productTitleController = TextEditingController();
   TextEditingController productDescriptionController = TextEditingController();
   TextEditingController productPriceController = TextEditingController();
-  TextEditingController githubLinkController = TextEditingController();
+  TextEditingController itemLeftController = TextEditingController();
   TextEditingController purchaseLinkController = TextEditingController();
 
 
@@ -273,7 +273,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
           "image": _productImageFile,
           "description": productDescriptionController.text,
           "productprice": productPriceController.text,
-          // "projectgithublink": githubLinkController.text,
+          "itemLeft": itemLeftController.text,
           "purchaseLink": purchaseLinkController.text,
         });
 
@@ -281,7 +281,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
         productTitleController.clear();
         productDescriptionController.clear();
         productPriceController.clear();
-        githubLinkController.clear();
+        itemLeftController.clear();
         purchaseLinkController.clear();
         _productImageFile = null;
       });
@@ -505,7 +505,10 @@ class _UserInfoPageState extends State<UserInfoPage> {
           "description": products["description"],
           "productprice": products["productprice"],
           "purchaseLink": products["purchaseLink"],
+          "itemLeft": products["itemLeft"],
           "image": projectImageUrl,
+          "likes": 0,
+          "dislikes": 0,
         });
       }
 
@@ -946,7 +949,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
               _buildTextField(productTitleController, "Product Title", Icons.emoji_events),
               _buildTextField(productDescriptionController, "Product Description", Icons.description),
               _buildTextField(productPriceController, "Price", Icons.description),
-              // _buildTextField(githubLinkController, "Github Code link", Icons.description),
+              _buildTextField(itemLeftController, "Item Left", Icons.description, keyboardType: TextInputType.number),
               _buildTextField(purchaseLinkController, "Purchase Link", Icons.link),
               FittedBox(
                 child: Row(
