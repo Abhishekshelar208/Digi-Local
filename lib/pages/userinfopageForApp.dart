@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math';
 
@@ -381,16 +382,106 @@ class _UserInfoPageState extends State<UserInfoPage> {
     }
   }
 
+  double? shopLatitude;
+  double? shopLongitude;
+
+  Future<void> _getCurrentLocationnn() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      setState(() {
+        shopLatitude = position.latitude;
+        shopLongitude = position.longitude;
+      });
+    } catch (e) {
+      print("Error fetching location: $e");
+    }
+  }
+
+  String _locationMessage = "Click 'Get Location' to fetch coordinates";
+  bool _isLoading = false;
+
+  Future<void> _getCurrentLocation() async {
+    setState(() {
+      _isLoading = true;
+      _locationMessage = "Fetching location...";
+    });
+
+    try {
+      // Check if location services are enabled
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        setState(() {
+          _locationMessage = "❌ Location services are disabled. Please enable them.";
+          _isLoading = false;
+        });
+        return;
+      }
+
+      // Check location permissions
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          setState(() {
+            _locationMessage = "❌ Location permission denied.";
+            _isLoading = false;
+          });
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        setState(() {
+          _locationMessage = "❌ Location permission permanently denied. Enable it from settings.";
+          _isLoading = false;
+        });
+        return;
+      }
+
+      // Fetch the location
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      setState(() {
+        _locationMessage = "📍 Latitude: ${position.latitude},\n📍 Longitude: ${position.longitude}";
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _locationMessage = "⚠️ Error fetching location: $e";
+        _isLoading = false;
+      });
+    }
+  }
+
   void saveUserData() async {
     setState(() {
       isLoading = true;
     });
+
+    await _getCurrentLocationnn(); // Get shop location before storing data
 
     try {
       User? user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("User not logged in!")),
+        );
+        setState(() {
+          isLoading = false;
+        });
+        return;
+      }
+
+
+      // Ensure location is fetched
+      if (shopLatitude == null || shopLongitude == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Location not fetched. Please try again.")),
         );
         setState(() {
           isLoading = false;
@@ -507,6 +598,8 @@ class _UserInfoPageState extends State<UserInfoPage> {
           "purchaseLink": products["purchaseLink"],
           "itemLeft": products["itemLeft"],
           "image": projectImageUrl,
+          "likes": 0,
+          "dislikes": 0,
         });
       }
 
@@ -531,6 +624,8 @@ class _UserInfoPageState extends State<UserInfoPage> {
           "shopEmail": shopEmailController.text.trim(),
           "ContactNo": contactNoController.text.trim(),
           "shopImage": profilePictureUrl,
+          "latitude": shopLatitude,  // Store latitude
+          "longitude": shopLongitude, // Store longitude
         },
         "category": selectedCategory,
         "subCategory": selectedSubCategory,
@@ -603,11 +698,6 @@ class _UserInfoPageState extends State<UserInfoPage> {
 //   }
 
   Future<String> _uploadImageToFirebase(File imageFile, String path) async {
-    if (!imageFile.existsSync()) {
-      print("Error: The file does not exist at path: ${imageFile.path}");
-      return "";
-    }
-
     Reference storageRef = FirebaseStorage.instance.ref().child(path);
     UploadTask uploadTask = storageRef.putFile(imageFile);
     TaskSnapshot snapshot = await uploadTask;
@@ -1086,8 +1176,9 @@ class _UserInfoPageState extends State<UserInfoPage> {
                           textAlign: TextAlign.center,
                           style: GoogleFonts.blinker(
                             fontSize: 16,
-                            color: Colors.white60,
+                            color: Colors.black,
                             fontWeight: FontWeight.w500,
+
                           ),
                         ),
                       ),
@@ -1095,6 +1186,22 @@ class _UserInfoPageState extends State<UserInfoPage> {
                         : Container(),
                   ],
                 ),
+              ),
+              ElevatedButton(
+                onPressed: _getCurrentLocation,
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 32),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                child: _isLoading
+                    ? CircularProgressIndicator(color: Colors.white)
+                    : Text("Get Location"),
+              ),
+              SizedBox(height: 20),
+              Text(
+                _locationMessage,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.black),
               ),
               SizedBox(height: 20),
               ElevatedButton(
