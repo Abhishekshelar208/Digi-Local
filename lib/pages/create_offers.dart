@@ -36,7 +36,7 @@ class _CreateOffersPageState extends State<CreateOffersPage> {
         });
 
         if (creatorName != null) {
-          DatabaseReference newChallengeRef = _database.child("jobs").push();
+          DatabaseReference newChallengeRef = _database.child("offers").push();
           await newChallengeRef.set({
             "name": _nameController.text,
             "description": _descriptionController.text,

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class OnlineBookingsForCustomer extends StatefulWidget {
   @override
@@ -67,15 +68,33 @@ class _OnlineBookingsForCustomerState extends State<OnlineBookingsForCustomer> {
     });
   }
 
-  void _updateBookingStatus(String bookingId, String status) {
-    _database.child(bookingId).update({"status": status}).then((_) {
-      setState(() {
-        bookings.firstWhere((booking) => booking["id"] == bookingId)["status"] = status;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Status updated to $status")),
-      );
-    });
+  void _showQRCode(String bookingId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: Text("Booking QR Code",style: GoogleFonts.blinker(fontSize: 28, fontWeight: FontWeight.w600, color: Colors.black),),
+        content: SizedBox(
+          width: 250, // Ensure a defined width
+          height: 250, // Ensure a defined height
+          child: Center(
+            child: QrImageView(
+              backgroundColor: Colors.white,
+              data: bookingId,
+              version: QrVersions.auto,
+              size: 200.0, // This ensures the QR code has a proper size
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("Close",style: GoogleFonts.blinker(fontSize: 24, fontWeight: FontWeight.w600, color: Colors.black),),
+          ),
+        ],
+      ),
+
+    );
   }
 
   @override
@@ -151,9 +170,12 @@ class _OnlineBookingsForCustomerState extends State<OnlineBookingsForCustomer> {
                             "Status: ${booking["status"]}",
                             style: GoogleFonts.blinker(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.white),
                           ),
-
                         ],
                       ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.qr_code, color: Colors.white, size: 30),
+                      onPressed: () => _showQRCode(booking["id"]),
                     ),
                   ],
                 ),

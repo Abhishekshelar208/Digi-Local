@@ -46,6 +46,9 @@ class _EditShopPageState extends State<EditShopPage> {
   TextEditingController noOfProductsController = TextEditingController();
   TextEditingController shopTimingsController = TextEditingController();
 
+  TextEditingController latitudeController = TextEditingController();
+  TextEditingController longitudeController = TextEditingController();
+
   // Files
   File? _imageFile;
   File? _eventImageFile;
@@ -122,6 +125,8 @@ class _EditShopPageState extends State<EditShopPage> {
     addressController.text = shopInfo['address']?.toString() ?? '';
     shopEmailController.text = shopInfo['shopEmail']?.toString() ?? '';
     contactNoController.text = shopInfo['ContactNo']?.toString() ?? '';
+    latitudeController.text = shopInfo['latitude']?.toString() ?? '';
+    longitudeController.text = shopInfo['longitude']?.toString() ?? '';
 
     // Social links
     facebookController.text = accountLinks['facebook']?.toString() ?? '';
@@ -377,6 +382,8 @@ class _EditShopPageState extends State<EditShopPage> {
             "shopEmail": shopEmailController.text.trim(),
             "ContactNo": contactNoController.text.trim(),
             "shopImage": profilePictureUrl ?? widget.shopData['shopInfo']['shopImage'],
+            "latitude": latitudeController.text.trim(),
+            "longitude": longitudeController.text.trim(),
           },
           "category": selectedCategory,
           "subCategory": selectedSubCategory,
@@ -599,6 +606,72 @@ class _EditShopPageState extends State<EditShopPage> {
                   ),
                 ),
                 keyboardType: TextInputType.phone,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              TextFormField(
+                style: GoogleFonts.blinker(fontSize: 20, fontWeight: FontWeight.bold, color:  Colors.black54),
+                controller: latitudeController,
+                decoration: InputDecoration(
+                  labelText: 'Latitude',
+                  labelStyle: GoogleFonts.blinker(fontSize: 20, fontWeight: FontWeight.bold, color:  Colors.black54),
+                  hintStyle: GoogleFonts.blinker(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black54),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(color: Colors.black,),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(color: Colors.black,), // Always orange
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(color: Colors.black, width: 2), // Thicker when focused
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(color: Colors.black,), // Always orange
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(color: Colors.black, width: 2), // Thicker when focused
+                  ),
+                ),
+                validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              TextFormField(
+                style: GoogleFonts.blinker(fontSize: 20, fontWeight: FontWeight.bold, color:  Colors.black54),
+                controller: longitudeController,
+                decoration: InputDecoration(
+                  labelText: 'Longitude',
+                  labelStyle: GoogleFonts.blinker(fontSize: 20, fontWeight: FontWeight.bold, color:  Colors.black54),
+                  hintStyle: GoogleFonts.blinker(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black54),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(color: Colors.black,),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(color: Colors.black,), // Always orange
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(color: Colors.black, width: 2), // Thicker when focused
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(color: Colors.black,), // Always orange
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(color: Colors.black, width: 2), // Thicker when focused
+                  ),
+                ),
+                validator: (value) => value?.isEmpty ?? true ? "Required" : null,
               ),
 
               // Category Selection

@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class OnlineBookingsForShop extends StatefulWidget {
   @override
@@ -14,6 +16,7 @@ class _OnlineBookingsForShopState extends State<OnlineBookingsForShop> {
 
   List<Map<String, dynamic>> bookings = [];
   String userEmail = "";
+  bool _isProcessing = false;
 
   final List<Color> boxColors = [
     Color(0xFF6cd5c6),
@@ -76,6 +79,68 @@ class _OnlineBookingsForShopState extends State<OnlineBookingsForShop> {
         SnackBar(content: Text("Status updated to $status")),
       );
     });
+  }
+
+  Future<void> _checkAndFetchEntry(String bookingId) async {
+    DatabaseReference bookingRef = _database.child(bookingId);
+    DatabaseEvent event = await bookingRef.once();
+
+    if (event.snapshot.exists) {
+      Map<String, dynamic> bookingData = Map<String, dynamic>.from(event.snapshot.value as Map);
+      // Navigate to a new screen to display the booking details
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => BookingDetailScreen(
+            bookingId: bookingId,
+            bookingData: bookingData,
+          ),
+        ),
+      );
+    } else {
+      Fluttertoast.showToast(
+        msg: "Booking ID not found.",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+      );
+    }
+  }
+
+  void _scanQRCode() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Scan QR Code", style: GoogleFonts.blinker(fontSize: 24, fontWeight: FontWeight.w600)),
+        content: Container(
+          height: 300,
+          width: 300,
+          child: MobileScanner(
+            onDetect: (capture) async {
+              if (_isProcessing) return;
+              _isProcessing = true;
+
+              final List<Barcode> barcodes = capture.barcodes;
+              for (final barcode in barcodes) {
+                if (barcode.rawValue != null) {
+                  String uniqueId = barcode.rawValue!;
+                  Navigator.pop(context); // Close the scanner dialog
+                  await _checkAndFetchEntry(uniqueId);
+                  break; // Process first valid barcode
+                } else {
+                  Fluttertoast.showToast(
+                    msg: "Invalid QR code data.",
+                    toastLength: Toast.LENGTH_LONG,
+                    gravity: ToastGravity.BOTTOM,
+                  );
+                }
+              }
+
+              _isProcessing = false;
+            },
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -182,6 +247,80 @@ class _OnlineBookingsForShopState extends State<OnlineBookingsForShop> {
             ),
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _scanQRCode,
+        backgroundColor: Colors.blue,
+        child: Icon(Icons.qr_code_scanner, color: Colors.white),
+      ),
+    );
+  }
+}
+
+// New screen to display booking details after scanning the QR code
+class BookingDetailScreen extends StatelessWidget {
+  final String bookingId;
+  final Map<String, dynamic> bookingData;
+
+  const BookingDetailScreen({Key? key, required this.bookingId, required this.bookingData}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Booking Details", style: GoogleFonts.blinker(fontSize: 24, fontWeight: FontWeight.w600, color: Colors.black)),
+        backgroundColor: Color(0xffF2F0EF),
+        iconTheme: IconThemeData(color: Colors.black),
+        elevation: 0,
+      ),
+      backgroundColor: Color(0xffF2F0EF),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Card(
+            elevation: 4,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  bookingData["productImage"].isNotEmpty
+                      ? ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: Image.network(
+                      bookingData["productImage"],
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                      : Icon(Icons.image, size: 100),
+                  SizedBox(height: 16),
+                  Text(
+                    bookingData["productName"],
+                    style: GoogleFonts.blinker(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    "Price: ${bookingData["productPrice"]}",
+                    style: GoogleFonts.blinker(fontSize: 20),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    "Items Left: ${bookingData["itemLeft"]}",
+                    style: GoogleFonts.blinker(fontSize: 20),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    "Status: ${bookingData["status"]}",
+                    style: GoogleFonts.blinker(fontSize: 20),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

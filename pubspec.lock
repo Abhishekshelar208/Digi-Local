@@ -361,6 +361,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.6+10"
+  firebase_messaging:
+    dependency: "direct main"
+    description:
+      name: firebase_messaging
+      sha256: "5fc345c6341f9dc69fd0ffcbf508c784fd6d1b9e9f249587f30434dd8b6aa281"
+      url: "https://pub.dev"
+    source: hosted
+    version: "15.2.4"
+  firebase_messaging_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_messaging_platform_interface
+      sha256: a935924cf40925985c8049df4968b1dde5c704f570f3ce380b31d3de6990dd94
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.6.4"
+  firebase_messaging_web:
+    dependency: transitive
+    description:
+      name: firebase_messaging_web
+      sha256: fafebf6a1921931334f3f10edb5037a5712288efdd022881e2d093e5654a2fd4
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.10.4"
   firebase_storage:
     dependency: "direct main"
     description:
@@ -848,6 +872,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
+  mobile_scanner:
+    dependency: "direct main"
+    description:
+      name: mobile_scanner
+      sha256: "9cb9e371ee9b5b548714f9ab5fd33b530d799745c83d5729ecd1e8ab2935dbd1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.0.7"
   open_file:
     dependency: "direct main"
     description:
@@ -1008,6 +1040,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.0.1"
+  qr:
+    dependency: transitive
+    description:
+      name: qr
+      sha256: "5a1d2586170e172b8a8c8470bbbffd5eb0cd38a66c0d77155ea138d3af3a4445"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.2"
+  qr_flutter:
+    dependency: "direct main"
+    description:
+      name: qr_flutter
+      sha256: "5095f0fc6e3f71d08adef8feccc8cea4f12eec18a2e31c2e8d82cb6019f4b097"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.1.0"
   rive:
     dependency: "direct main"
     description:
