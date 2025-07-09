@@ -1,4 +1,6 @@
 import 'package:digilocal/pages/displayJobs.dart';
+import 'package:digilocal/pages/onlineBookingForSHop.dart';
+import 'package:digilocal/pages/onlineBookingsForCustomer.dart';
 import 'package:flutter/material.dart';
 import 'package:digilocal/pages/profile.dart';
 
@@ -22,7 +24,7 @@ class _HomeScreenForStdudentState extends State<HomeScreenForStdudent> {
   static final List<Widget> _pages = <Widget>[
     HomeScreen(),
     OfferListPage(),
-    FilterUsersPage(),
+    OnlineBookingsForShop(),
     JobsListPage(),
     ProfilePage(),
 
@@ -121,7 +123,7 @@ class _HomeScreenForStdudentState extends State<HomeScreenForStdudent> {
       case 1:
         return 'lib/assets/icons/checklist.png';
       case 2:
-        return 'lib/assets/icons/search.png'; // Middle icon
+        return 'lib/assets/icons/book.png'; // Middle icon
       case 3:
         return 'lib/assets/icons/chat.png';
       case 4:
@@ -139,7 +141,7 @@ class _HomeScreenForStdudentState extends State<HomeScreenForStdudent> {
       case 1:
         return 'Offers';
       case 2:
-        return 'Search'; // Middle label
+        return 'Bookings'; // Middle label
       case 3:
         return 'Jobs';
       case 4:

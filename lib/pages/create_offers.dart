@@ -13,11 +13,45 @@ class CreateOffersPage extends StatefulWidget {
 
 class _CreateOffersPageState extends State<CreateOffersPage> {
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _shopNameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _requirementsController = TextEditingController();
   DateTime? _selectedDeadline;
   final DatabaseReference _database = FirebaseDatabase.instance.ref();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // Future<void> _createChallenge() async {
+  //   User? user = _auth.currentUser;
+  //   if (user != null) {
+  //     DatabaseReference studentsRef = _database.child("users");
+  //     DataSnapshot snapshot = await studentsRef.get();
+  //
+  //     if (snapshot.exists) {
+  //       Map<dynamic, dynamic> studentsData = snapshot.value as Map<dynamic, dynamic>;
+  //       String? creatorName;
+  //
+  //       studentsData.forEach((key, student) {
+  //         if (student["email"] == user.email) {
+  //           creatorName = student["name"];
+  //         }
+  //       });
+  //
+  //       if (creatorName != null) {
+  //         DatabaseReference newChallengeRef = _database.child("offers").push();
+  //         await newChallengeRef.set({
+  //           "name": _nameController.text,
+  //           "description": _descriptionController.text,
+  //           "coupon": _requirementsController.text ?? "No Coupons",
+  //           "deadline": _selectedDeadline?.toIso8601String() ?? "No Ending Date",
+  //           "creator": creatorName,
+  //         });
+  //
+  //         Navigator.pop(context);
+  //       }
+  //     }
+  //   }
+  // }
+
 
   Future<void> _createChallenge() async {
     User? user = _auth.currentUser;
@@ -42,7 +76,8 @@ class _CreateOffersPageState extends State<CreateOffersPage> {
             "description": _descriptionController.text,
             "coupon": _requirementsController.text ?? "No Coupons",
             "deadline": _selectedDeadline?.toIso8601String() ?? "No Ending Date",
-            "creator": creatorName,
+            "creator": _shopNameController.text,
+            "creator_email": user.email, // Storing email ID of the logged-in user
           });
 
           Navigator.pop(context);
@@ -50,6 +85,7 @@ class _CreateOffersPageState extends State<CreateOffersPage> {
       }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -163,6 +199,38 @@ class _CreateOffersPageState extends State<CreateOffersPage> {
               ),
 
             ),
+
+            SizedBox(
+              height: 10,
+            ),
+
+            TextField(
+              style: GoogleFonts.blinker(fontSize: 20, fontWeight: FontWeight.bold, color:  Colors.black54),
+              controller: _shopNameController, decoration: InputDecoration(
+              labelText: 'Shop Name',
+              labelStyle: GoogleFonts.blinker(fontSize: 20, fontWeight: FontWeight.bold, color:  Colors.black54),
+              hintStyle: GoogleFonts.blinker(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black54),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(15),
+                borderSide: BorderSide(color: Colors.black,),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(15),
+                borderSide: BorderSide(color: Colors.black,), // Always orange
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(15),
+                borderSide: BorderSide(color: Colors.black, width: 2), // Thicker when focused
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(15),
+                borderSide: BorderSide(color: Colors.black,), // Always orange
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(15),
+                borderSide: BorderSide(color: Colors.black, width: 2), // Thicker when focused
+              ),
+            ),),
 
             SizedBox(height: 10),
             Row(

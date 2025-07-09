@@ -38,6 +38,7 @@ class _EditShopPageState extends State<EditShopPage> {
   TextEditingController productTitleController = TextEditingController();
   TextEditingController productDescriptionController = TextEditingController();
   TextEditingController productPriceController = TextEditingController();
+  TextEditingController itemLeftController = TextEditingController();
   TextEditingController purchaseLinkController = TextEditingController();
   TextEditingController offerTitleController = TextEditingController();
   TextEditingController offerDescriptionController = TextEditingController();
@@ -271,6 +272,7 @@ class _EditShopPageState extends State<EditShopPage> {
           "image": _productImageFile,
           "description": productDescriptionController.text,
           "productprice": productPriceController.text,
+          "itemLeft": itemLeftController.text,
           "purchaseLink": purchaseLinkController.text,
         });
         productTitleController.clear();
@@ -370,6 +372,7 @@ class _EditShopPageState extends State<EditShopPage> {
             "title": product['title'],
             "description": product['description'],
             "productprice": product['productprice'],
+            "itemLeft": product['itemLeft'],
             "purchaseLink": product['purchaseLink'],
             "image": imageUrl,
           });
@@ -1175,6 +1178,39 @@ class _EditShopPageState extends State<EditShopPage> {
                 controller: productPriceController,
                 decoration: InputDecoration(
                   labelText: 'Product Price',
+                  labelStyle: GoogleFonts.blinker(fontSize: 20, fontWeight: FontWeight.bold, color:  Colors.black54),
+                  hintStyle: GoogleFonts.blinker(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black54),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(color: Colors.black,),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(color: Colors.black,), // Always orange
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(color: Colors.black, width: 2), // Thicker when focused
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(color: Colors.black,), // Always orange
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(color: Colors.black, width: 2), // Thicker when focused
+                  ),
+                ),
+                keyboardType: TextInputType.number,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              TextFormField(
+                style: GoogleFonts.blinker(fontSize: 20, fontWeight: FontWeight.bold, color:  Colors.black54),
+                controller: itemLeftController,
+                decoration: InputDecoration(
+                  labelText: 'Item Left',
                   labelStyle: GoogleFonts.blinker(fontSize: 20, fontWeight: FontWeight.bold, color:  Colors.black54),
                   hintStyle: GoogleFonts.blinker(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black54),
                   border: OutlineInputBorder(

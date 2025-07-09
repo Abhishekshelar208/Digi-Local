@@ -1,3 +1,206 @@
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:flutter/material.dart';
+// import 'package:firebase_database/firebase_database.dart';
+// import 'package:google_fonts/google_fonts.dart';
+// import 'package:intl/intl.dart';
+//
+// import 'create_offers.dart';
+//
+// String formatDeadline(String dateString) {
+//   try {
+//     DateTime date = DateTime.parse(dateString); // Parse the date
+//     return DateFormat('d MMM y').format(date); // Format to "23 Dec"
+//   } catch (e) {
+//     return dateString; // Return original if parsing fails
+//   }
+// }
+//
+//
+//
+// class OfferListPage extends StatefulWidget {
+//   @override
+//   _OfferListPageState createState() => _OfferListPageState();
+// }
+//
+//
+//
+// class _OfferListPageState extends State<OfferListPage> {
+//   final DatabaseReference _database =
+//   FirebaseDatabase.instance.ref().child("offers");
+//   List<Map<String, dynamic>> offers = [];
+//
+//   final List<Color> boxColors = [
+//     // Color(0xFF8f98ff),
+//     // Color(0xFFfda88b),
+//     // Color(0xFF4dc590),
+//     // Color(0xFF66a3da),
+//     // Color(0xFFff8181),
+//     // Color(0xFFDCB0F2),
+//     // Color(0xFFF6CF71),
+//
+//
+//     Color(0xFF6cd5c6),
+//     Color(0xFFfda88b),
+//     Color(0xFF9bbef5),
+//     Color(0xFFf59fd6),
+//     Color(0xFFbba1f1),
+//     Color(0xFF8ec7d3),
+//     Color(0xFFa0d69a),
+//
+//   ];
+//
+//
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     _fetchChallenges();
+//   }
+//
+//   Future<void> _fetchChallenges() async {
+//     _database.onValue.listen((event) {
+//       if (event.snapshot.exists) {
+//         Map<dynamic, dynamic> challengesData =
+//         event.snapshot.value as Map<dynamic, dynamic>;
+//         setState(() {
+//           offers = challengesData.entries.map((entry) {
+//             return {
+//               "id": entry.key,
+//               "name": entry.value["name"],
+//               "description": entry.value["description"],
+//               "coupon": entry.value["coupon"],
+//               "deadline": entry.value["deadline"],
+//               "creator": entry.value["creator"],
+//             };
+//           }).toList();
+//         });
+//       }
+//     });
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: Color(0xffF2F0EF), //off white,
+//       appBar: AppBar(
+//         title: Text(
+//           "Discounts & Offers",
+//           style: GoogleFonts.blinker(
+//               fontSize: 34,
+//               fontWeight: FontWeight.w600,
+//               color: Colors.black),
+//         ),
+//         centerTitle: true,
+//         backgroundColor: Color(0xffF2F0EF), //off white,
+//         elevation: 0,
+//         iconTheme: IconThemeData(color: Colors.black),
+//       ),
+//       body: Column(
+//         children: [
+//           SizedBox(height: 16), // Space after AppBar
+//           Expanded(
+//             child: ListView.builder(
+//               itemCount: offers.length,
+//               itemBuilder: (context, index) {
+//                 var challenge = offers[index];
+//                 return Container(
+//                   height: 170, // Increased card height
+//                   margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+//                   child: Card(
+//                     shape: RoundedRectangleBorder(
+//                       borderRadius: BorderRadius.circular(20), // Rounded corners
+//                     ),
+//                     elevation: 4,
+//                     color: boxColors[index % boxColors.length], // Assigning colors sequentially
+//                     child: Padding(
+//                       padding: const EdgeInsets.all(12.0),
+//                       child: Row(
+//                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                         children: [
+//                           Expanded(
+//                             child: Column(
+//                               crossAxisAlignment: CrossAxisAlignment.start,
+//                               mainAxisAlignment: MainAxisAlignment.center,
+//                               children: [
+//                                 FittedBox(
+//                                   child: Text(
+//                                     challenge["name"],
+//                                     style: GoogleFonts.blinker(
+//                                         fontSize: 30,
+//                                         fontWeight: FontWeight.bold,
+//                                         color: Colors.white),
+//                                   ),
+//                                 ),
+//                                 SizedBox(height: 5),
+//                                 FittedBox(
+//                                   child: Text(
+//                                     "Created By: ${challenge["creator"]}",
+//                                     style: GoogleFonts.blinker(color: Colors.white,fontSize: 17,fontWeight: FontWeight.w600),
+//                                   ),
+//                                 ),
+//                                 Text("Ends At: ${formatDeadline(challenge["deadline"])}",
+//                                   style: GoogleFonts.blinker(color: Colors.black54,fontSize: 17, fontWeight: FontWeight.w600),
+//                                 ),
+//                                 SizedBox(height: 5),
+//                                 Row(
+//                                   children: [
+//                                     Icon(Icons.thumb_up_alt_outlined),
+//                                     SizedBox(width: 10),
+//                                     Icon(Icons.thumb_down_alt_outlined),
+//                                   ],
+//                                 ),
+//                               ],
+//                             ),
+//                           ),
+//                           ElevatedButton(
+//                             style: ElevatedButton.styleFrom(
+//                               backgroundColor: Colors.grey[100],
+//                               foregroundColor: boxColors[index % boxColors.length], // Button text color
+//                             ),
+//                             onPressed: () {
+//                               Navigator.push(
+//                                 context,
+//                                 MaterialPageRoute(
+//                                   builder: (context) => OffersDetailPage(
+//                                       challengeId: challenge["id"],
+//                                       challenge: challenge),
+//                                 ),
+//                               );
+//                             },
+//                             child: Text("View",style: GoogleFonts.blinker(
+//                                 fontSize: 18,
+//                                 fontWeight: FontWeight.w600,
+//                                 color: Colors.black),),
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ),
+//                 );
+//               },
+//             ),
+//           ),
+//         ],
+//       ),
+//       floatingActionButton: FloatingActionButton.extended(
+//         onPressed: () {
+//           Navigator.push(
+//             context,
+//             MaterialPageRoute(builder: (context) => CreateOffersPage()),
+//           );
+//         },
+//         label: Icon(Icons.add,color: Colors.black,),
+//         backgroundColor: Colors.white, // Matching theme
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -9,20 +212,16 @@ import 'create_offers.dart';
 String formatDeadline(String dateString) {
   try {
     DateTime date = DateTime.parse(dateString); // Parse the date
-    return DateFormat('d MMM y').format(date); // Format to "23 Dec"
+    return DateFormat('d MMM y').format(date); // Format to "23 Dec 2025"
   } catch (e) {
     return dateString; // Return original if parsing fails
   }
 }
 
-
-
 class OfferListPage extends StatefulWidget {
   @override
   _OfferListPageState createState() => _OfferListPageState();
 }
-
-
 
 class _OfferListPageState extends State<OfferListPage> {
   final DatabaseReference _database =
@@ -30,15 +229,6 @@ class _OfferListPageState extends State<OfferListPage> {
   List<Map<String, dynamic>> offers = [];
 
   final List<Color> boxColors = [
-    // Color(0xFF8f98ff),
-    // Color(0xFFfda88b),
-    // Color(0xFF4dc590),
-    // Color(0xFF66a3da),
-    // Color(0xFFff8181),
-    // Color(0xFFDCB0F2),
-    // Color(0xFFF6CF71),
-
-
     Color(0xFF6cd5c6),
     Color(0xFFfda88b),
     Color(0xFF9bbef5),
@@ -46,10 +236,7 @@ class _OfferListPageState extends State<OfferListPage> {
     Color(0xFFbba1f1),
     Color(0xFF8ec7d3),
     Color(0xFFa0d69a),
-
   ];
-
-
 
   @override
   void initState() {
@@ -64,6 +251,10 @@ class _OfferListPageState extends State<OfferListPage> {
         event.snapshot.value as Map<dynamic, dynamic>;
         setState(() {
           offers = challengesData.entries.map((entry) {
+            // Get reaction data if available
+            final likedData = entry.value["LikedUsersEmail"] as Map<dynamic, dynamic>?;
+            final dislikeData = entry.value["DislikeUsersEmail"] as Map<dynamic, dynamic>?;
+
             return {
               "id": entry.key,
               "name": entry.value["name"],
@@ -71,6 +262,11 @@ class _OfferListPageState extends State<OfferListPage> {
               "coupon": entry.value["coupon"],
               "deadline": entry.value["deadline"],
               "creator": entry.value["creator"],
+              // Store the raw maps for reactions so we can check if the current user has reacted
+              "likedEmails": likedData ?? {},
+              "dislikedEmails": dislikeData ?? {},
+              "likeCount": likedData != null ? likedData.length : 0,
+              "dislikeCount": dislikeData != null ? dislikeData.length : 0,
             };
           }).toList();
         });
@@ -78,40 +274,70 @@ class _OfferListPageState extends State<OfferListPage> {
     });
   }
 
+  // Method to update like/dislike reaction
+  Future<void> _updateReaction(String offerId, String reactionType) async {
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user != null && user.email != null) {
+      String email = user.email!;
+      String node = reactionType == "like" ? "LikedUsersEmail" : "DislikeUsersEmail";
+      DatabaseReference reactionRef =
+      FirebaseDatabase.instance.ref().child("offers").child(offerId).child(node);
+
+      // Push the email if it does not already exist
+      // (for simplicity we use push() which does not prevent duplicates; in production you might want to check)
+      await reactionRef.push().set(email);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Your $reactionType has been recorded.")),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Please log in to react to this offer.")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Get the current user's email (if logged in) to decide icon state.
+    final String? currentUserEmail = FirebaseAuth.instance.currentUser?.email;
+
     return Scaffold(
-      backgroundColor: Color(0xffF2F0EF), //off white,
+      backgroundColor: Color(0xffF2F0EF), // Off white
       appBar: AppBar(
         title: Text(
           "Discounts & Offers",
           style: GoogleFonts.blinker(
-              fontSize: 34,
-              fontWeight: FontWeight.w600,
-              color: Colors.black),
+              fontSize: 34, fontWeight: FontWeight.w600, color: Colors.black),
         ),
         centerTitle: true,
-        backgroundColor: Color(0xffF2F0EF), //off white,
+        backgroundColor: Color(0xffF2F0EF),
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
       ),
       body: Column(
         children: [
-          SizedBox(height: 16), // Space after AppBar
+          SizedBox(height: 16),
           Expanded(
             child: ListView.builder(
               itemCount: offers.length,
               itemBuilder: (context, index) {
-                var challenge = offers[index];
+                var offer = offers[index];
+
+                // Determine if the current user already liked/disliked this offer
+                bool isLiked = currentUserEmail != null &&
+                    offer["likedEmails"].values.contains(currentUserEmail);
+                bool isDisliked = currentUserEmail != null &&
+                    offer["dislikedEmails"].values.contains(currentUserEmail);
+
                 return Container(
-                  height: 150, // Increased card height
+                  height: 170,
                   margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   child: Card(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20), // Rounded corners
+                      borderRadius: BorderRadius.circular(20),
                     ),
                     elevation: 4,
-                    color: boxColors[index % boxColors.length], // Assigning colors sequentially
+                    color: boxColors[index % boxColors.length],
                     child: Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: Row(
@@ -124,7 +350,7 @@ class _OfferListPageState extends State<OfferListPage> {
                               children: [
                                 FittedBox(
                                   child: Text(
-                                    challenge["name"],
+                                    offer["name"],
                                     style: GoogleFonts.blinker(
                                         fontSize: 30,
                                         fontWeight: FontWeight.bold,
@@ -134,12 +360,71 @@ class _OfferListPageState extends State<OfferListPage> {
                                 SizedBox(height: 5),
                                 FittedBox(
                                   child: Text(
-                                    "Created By: ${challenge["creator"]}",
-                                    style: GoogleFonts.blinker(color: Colors.white,fontSize: 17,fontWeight: FontWeight.w600),
+                                    "Created By: ${offer["creator"]}",
+                                    style: GoogleFonts.blinker(
+                                        color: Colors.white,
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w600),
                                   ),
                                 ),
-                                Text("Ends At: ${formatDeadline(challenge["deadline"])}",
-                                  style: GoogleFonts.blinker(color: Colors.black54,fontSize: 17, fontWeight: FontWeight.w600),
+                                Text(
+                                  "Ends At: ${formatDeadline(offer["deadline"])}",
+                                  style: GoogleFonts.blinker(
+                                      color: Colors.black54,
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                SizedBox(height: 5),
+                                Row(
+                                  children: [
+                                    // Like icon and count
+                                    InkWell(
+                                      onTap: () {
+                                        _updateReaction(offer["id"], "like");
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            // Use filled icon if user has liked; outlined otherwise
+                                            isLiked ? Icons.thumb_up : Icons.thumb_up_alt_outlined,
+                                            color: Colors.white,
+                                          ),
+                                          SizedBox(width: 5),
+                                          Text(
+                                            "${offer["likeCount"]}",
+                                            style: GoogleFonts.blinker(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(width: 20),
+                                    // Dislike icon and count
+                                    InkWell(
+                                      onTap: () {
+                                        _updateReaction(offer["id"], "dislike");
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            // For dislike, keeping the outlined icon for now
+                                            isDisliked ? Icons.thumb_down : Icons.thumb_down_alt_outlined,
+                                            color: Colors.white,
+                                          ),
+                                          SizedBox(width: 5),
+                                          Text(
+                                            "${offer["dislikeCount"]}",
+                                            style: GoogleFonts.blinker(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -147,22 +432,26 @@ class _OfferListPageState extends State<OfferListPage> {
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.grey[100],
-                              foregroundColor: boxColors[index % boxColors.length], // Button text color
+                              foregroundColor: boxColors[index % boxColors.length],
                             ),
                             onPressed: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => OffersDetailPage(
-                                      challengeId: challenge["id"],
-                                      challenge: challenge),
+                                    challengeId: offer["id"],
+                                    challenge: offer,
+                                  ),
                                 ),
                               );
                             },
-                            child: Text("View",style: GoogleFonts.blinker(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black),),
+                            child: Text(
+                              "View",
+                              style: GoogleFonts.blinker(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black),
+                            ),
                           ),
                         ],
                       ),
@@ -181,16 +470,15 @@ class _OfferListPageState extends State<OfferListPage> {
             MaterialPageRoute(builder: (context) => CreateOffersPage()),
           );
         },
-        label: Icon(Icons.add,color: Colors.black,),
-        backgroundColor: Colors.white, // Matching theme
+        label: Icon(
+          Icons.add,
+          color: Colors.black,
+        ),
+        backgroundColor: Colors.white,
       ),
     );
   }
 }
-
-
-
-
 
 
 
