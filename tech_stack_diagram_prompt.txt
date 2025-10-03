@@ -1,0 +1,34 @@
+TECHNOLOGY STACK DIAGRAM PROMPT FOR DIGI-LOCAL PLATFORM
+========================================================
+
+Create a comprehensive, multi-layered technology stack diagram for the Digi-Local platform - an advanced local business digitalization ecosystem. The diagram should visualize all technology components, frameworks, services, and integrations organized by architectural layers from frontend to backend infrastructure.
+
+DIAGRAM STRUCTURE & ORGANIZATION
+
+Arrange the stack vertically in distinct horizontal layers, flowing from top (user-facing) to bottom (infrastructure). Use a modern, clean design with rounded rectangles for each technology component, color-coded by category. Include technology logos where applicable for immediate recognition.
+
+LAYER 1: CLIENT/PRESENTATION LAYER
+Position at the top. Show Flutter Framework (Dart) as the primary mobile application development platform supporting cross-platform deployment (Android/iOS). Include key Flutter packages: flutter_localizations for internationalization across 10+ Indian languages, google_fonts for typography, animations for UI transitions, and responsive_framework for adaptive layouts. Add state management solution (Provider/Riverpod/Bloc - specify which is used). Include flutter_unity_widget or ar_flutter_plugin for augmented reality features.
+
+LAYER 2: UI/UX COMPONENTS & LIBRARIES
+Display essential Flutter UI packages: image_picker and flutter_image_compress for media handling, url_launcher for external links and deep linking, google_maps_flutter for map visualization, table_calendar for booking interfaces, fl_chart for analytics visualization, pdf for invoice generation, cached_network_image for optimized image loading, animations package for micro-interactions, and shimmer for loading states.
+
+LAYER 3: BUSINESS LOGIC & SERVICES LAYER
+Show core service integrations: Firebase Authentication (Google OAuth2), Geolocator package for GPS positioning, speech_recognition for voice search, camera package for visual search and AR, connectivity_plus for network monitoring, shared_preferences for local caching, hive or sqflite for local database, workmanager for background geofencing tasks, and firebase_messaging for push notifications.
+
+LAYER 4: BACKEND-AS-A-SERVICE (BaaS)
+Center this critical layer prominently. Display Firebase ecosystem components: Firebase Core, Firebase Authentication (OAuth providers), Firebase Realtime Database (NoSQL data store for shops, users, chats, bookings, offers, jobs), Firebase Cloud Storage (media assets, invoices, AR models), Firebase Cloud Functions (Node.js serverless functions for payment webhooks, notification triggers, translation caching, analytics processing), Firebase Cloud Messaging (FCM) for real-time notifications, Firebase Crashlytics for error monitoring, and Firebase Analytics for user behavior tracking.
+
+LAYER 5: THIRD-PARTY INTEGRATIONS & APIs
+Display external services horizontally: Google Maps Platform (Maps SDK, Geocoding API, Directions API, Places API) for location services and geofencing; Payment Gateway integrations (Razorpay/Stripe SDKs for UPI, cards, wallets); Google Cloud Translation API for multilingual content; Google ML Kit or Firebase ML for visual search and image recognition; ARCore (Android) and ARKit (iOS) for augmented reality; and Google Generative AI API for smart search NLP processing.
+
+LAYER 6: INFRASTRUCTURE & HOSTING
+Bottom layer showing Google Cloud Platform infrastructure hosting Firebase services, Cloud Functions runtime environment (Node.js), CDN for static asset delivery, and SSL/TLS security certificates. Include monitoring tools: Firebase Performance Monitoring, Google Analytics for Firebase, and Cloud Logging.
+
+VISUAL DESIGN SPECIFICATIONS
+Use technology-specific brand colors: Flutter (blue #02569B), Firebase (orange #FFCA28), Google Cloud (multi-color), Dart (teal #00B4AB). Group related technologies with subtle background panels. Add connecting arrows showing data flow between layers: solid for synchronous, dashed for asynchronous operations. Include version numbers for major frameworks (Flutter 3.x, Dart 3.x, Firebase SDK versions). Add icons for platform support (Android, iOS, Web-ready indicators). Include a legend explaining layer purposes and connection types.
+
+ADDITIONAL ELEMENTS
+Add side annotations for: Security protocols (OAuth2, JWT tokens, Firebase Security Rules, PCI-DSS compliance for payments), Development tools (Android Studio, VS Code, Firebase Console, Git version control), Testing frameworks (flutter_test, integration_test, firebase_test_lab), and CI/CD pipeline (GitHub Actions/Bitrise for automated builds and deployment to Play Store/App Store).
+
+This diagram will serve as the definitive technical reference for developers, stakeholders, and documentation, clearly communicating the complete technology ecosystem powering Digi-Local's comprehensive feature set including geofencing, service bookings, payments, AR, price comparison, and multilingual support.

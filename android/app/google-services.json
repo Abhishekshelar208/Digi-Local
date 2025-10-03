@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "289627400479",
+    "firebase_url": "https://digilocal-go-digital-in-minute-default-rtdb.firebaseio.com",
     "project_id": "digilocal-go-digital-in-minute",
     "storage_bucket": "digilocal-go-digital-in-minute.firebasestorage.app"
   },
@@ -12,7 +13,20 @@
           "package_name": "com.example.digilocal"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "289627400479-67kgkj5ukbuu880lhtaairmas2bt55mr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.digilocal",
+            "certificate_hash": "6b9cbcd207c7ac1dfb3124264338a36f8a887ec1"
+          }
+        },
+        {
+          "client_id": "289627400479-ad20vgdvq81g9e1tbe88ankmdbvgi80p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCzyPSH2NPZtRydQANZYAsDyYNCsHMEpMA"
@@ -20,7 +34,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "289627400479-ad20vgdvq81g9e1tbe88ankmdbvgi80p.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "289627400479-kdopvi5vfc499ont62if3j91c2ofd4fb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.digilocal"
+              }
+            }
+          ]
         }
       }
     }
