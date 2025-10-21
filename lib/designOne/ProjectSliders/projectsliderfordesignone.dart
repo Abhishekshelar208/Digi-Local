@@ -90,11 +90,11 @@ class _ProjectSliderForDesignOneState extends State<ProjectSliderForDesignOne> {
                   return AnimatedContainer(
                     duration: Duration(milliseconds: 300),
                     margin: EdgeInsets.symmetric(horizontal: 4),
-                    width: isActive ? 12 : 8,
-                    height: isActive ? 12 : 8,
+                    width: isActive ? 24 : 8,
+                    height: 8,
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: isActive ? Colors.white : Colors.grey,
+                      borderRadius: BorderRadius.circular(4),
+                      color: isActive ? Color(0xFF6366F1) : Color(0xFFCBD5E1),
                     ),
                   );
                 }),
@@ -114,18 +114,26 @@ class _ProjectSliderForDesignOneState extends State<ProjectSliderForDesignOne> {
         duration: Duration(milliseconds: 300),
         transform: Matrix4.translationValues(0, 0, 0)..scale(1.02),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          gradient: LinearGradient(
+            colors: [Colors.white, Color(0xFFFAFAFA)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: Color(0xFFE2E8F0),
+            width: 1,
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.15),
-              blurRadius: 8,
-              offset: Offset(3, 3),
+              color: Color(0xFF64748B).withOpacity(0.12),
+              blurRadius: 24,
+              offset: Offset(0, 8),
             ),
           ],
         ),
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -144,7 +152,7 @@ class _ProjectSliderForDesignOneState extends State<ProjectSliderForDesignOne> {
                   child: Stack(
                     children: [
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(15),
+                        borderRadius: BorderRadius.circular(20),
                         child: Image.network(
                           widget.projects[index]["image"],
                           width: double.infinity,
@@ -176,62 +184,93 @@ class _ProjectSliderForDesignOneState extends State<ProjectSliderForDesignOne> {
                     ],
                   ),
                 ),
-              SizedBox(height: 12),
+              SizedBox(height: 16),
               // Project title
               Text(
                 widget.projects[index]["title"] ?? "No Title",
-                style: GoogleFonts.blinker(
-                  fontSize: 22,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
+                style: GoogleFonts.inter(
+                  fontSize: 20,
+                  color: Color(0xFF0F172A),
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.5,
                 ),
               ),
-              SizedBox(height: 6),
+              SizedBox(height: 8),
               // Description
               Text(
                 widget.projects[index]["description"] ?? "No Description",
-                style: GoogleFonts.blinker(
+                style: GoogleFonts.inter(
                   fontSize: 14,
-                  color: Colors.grey[700],
+                  color: Color(0xFF64748B),
+                  fontWeight: FontWeight.w500,
                   height: 1.5,
                 ),
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
-              SizedBox(height: 10),
+              Spacer(),
               // Product price
-              Text(
-                "Price: ${widget.projects[index]["productprice"] ?? "No Price"}",
-                style: GoogleFonts.blinker(
-                  fontSize: 18,
-                  color: Colors.black87,
-                  fontWeight: FontWeight.w600,
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Color(0xFFF1F5F9),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  "${widget.projects[index]["productprice"] ?? "No Price"}",
+                  style: GoogleFonts.inter(
+                    fontSize: 18,
+                    color: Color(0xFF0F172A),
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
-              SizedBox(height: 12),
+              SizedBox(height: 16),
               // Buy Now button
-              Align(
-                alignment: Alignment.center,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    final url = widget.projects[index]["purchaseLink"] ?? "";
-                    _launchURL(url);
-                  },
-                  icon: Icon(Icons.shopping_cart, color: Colors.white),
-                  label: Text(
-                    "Buy Now",
-                    style: GoogleFonts.blinker(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                    ),
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
                   ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0xFF6366F1).withOpacity(0.4),
+                      blurRadius: 12,
+                      offset: Offset(0, 4),
                     ),
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {
+                      final url = widget.projects[index]["purchaseLink"] ?? "";
+                      _launchURL(url);
+                    },
+                    borderRadius: BorderRadius.circular(12),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.shopping_cart, color: Colors.white, size: 18),
+                          SizedBox(width: 8),
+                          Text(
+                            "Buy Now",
+                            style: GoogleFonts.inter(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),

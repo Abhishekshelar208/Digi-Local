@@ -1,28 +1,68 @@
+import 'dart:async';
+import 'package:app_links/app_links.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:digilocal/pages/splash_screen.dart';
+import 'package:digilocal/pages/portfolioDetailLoader.dart';
 import 'firebase_options.dart';
-// This is my final version of the app
 
+const kWindowsScheme = 'sample';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase first2
   await Firebase.initializeApp(
-    //options: DefaultFirebaseOptions.currentPlatform,
+    // options: DefaultFirebaseOptions.currentPlatform,
   );
 
   runApp(const MyApp());
 }
 
-
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final _navigatorKey = GlobalKey<NavigatorState>();
+  StreamSubscription<Uri>? _linkSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    initDeepLinks();
+  }
+
+  @override
+  void dispose() {
+    _linkSubscription?.cancel();
+    super.dispose();
+  }
+
+  Future<void> initDeepLinks() async {
+    _linkSubscription = AppLinks().uriLinkStream.listen((Uri? uri) {
+      if (uri != null) {
+        debugPrint('onAppLink: $uri');
+        openAppLink(uri);
+      }
+    });
+  }
+
+  void openAppLink(Uri uri) {
+    final String? fragment = uri.fragment;
+    if (fragment != null && fragment.startsWith('/shops/')) {
+      final String portfolioId = fragment.substring('/shops/'.length);
+      _navigatorKey.currentState?.pushNamed(fragment);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: _navigatorKey,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.teal,
@@ -31,11 +71,37 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       title: 'Digi-Local',
-      // theme: ThemeData(
-      //   colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      //   useMaterial3: true,
-      // ),
-      home: const SplashScreen(),
+      onGenerateRoute: (RouteSettings settings) {
+        final String? routeName = settings.name;
+        
+        // Check if URL has shop route in fragment (for web deep links)
+        if (kIsWeb) {
+          final uri = Uri.base;
+          final fragment = uri.fragment;
+          if (fragment.isNotEmpty && fragment.startsWith('/shops/')) {
+            final String portfolioId = fragment.substring('/shops/'.length);
+            return MaterialPageRoute(
+              builder: (context) => PortfolioDetailLoader(portfolioId: portfolioId),
+              settings: settings,
+            );
+          }
+        }
+        
+        // Check if route name has shop path
+        if (routeName != null && routeName.startsWith('/shops/')) {
+          final String portfolioId = routeName.substring('/shops/'.length);
+          return MaterialPageRoute(
+            builder: (context) => PortfolioDetailLoader(portfolioId: portfolioId),
+            settings: settings,
+          );
+        }
+
+        // Default to splash screen
+        return MaterialPageRoute(
+          builder: (context) => const SplashScreen(),
+          settings: settings,
+        );
+      },
     );
   }
 }

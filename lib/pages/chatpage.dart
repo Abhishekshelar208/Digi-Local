@@ -21,7 +21,7 @@ class _ChatPageState extends State<ChatPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final DatabaseReference _database = FirebaseDatabase.instance.ref();
   List<types.Message> _messages = [];
-  late types.User _currentUser;
+  types.User? _currentUser;
 
   @override
   void initState() {
@@ -58,9 +58,10 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _sendMessage(types.PartialText message) {
+    if (_currentUser == null) return;
     String messageId = Uuid().v4();
     _database.child("chats/${widget.chatRoomId}/$messageId").set({
-      "senderId": _currentUser.id,
+      "senderId": _currentUser!.id,
       "text": message.text,
       "timestamp": DateTime.now().millisecondsSinceEpoch,
     });
@@ -70,11 +71,13 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Chat with ${widget.userName}")),
-      body: Chat(
-        messages: _messages,
-        onSendPressed: (message) => _sendMessage(message),
-        user: _currentUser,
-      ),
+      body: _currentUser == null
+          ? Center(child: CircularProgressIndicator())
+          : Chat(
+              messages: _messages,
+              onSendPressed: (message) => _sendMessage(message),
+              user: _currentUser!,
+            ),
     );
   }
 }

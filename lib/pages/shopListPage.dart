@@ -165,7 +165,7 @@ import '../designOne/designThree.dart';
 import '../designOne/designTwo.dart';
 import '../designOne/designfour.dart';
 import 'designSelectionPage.dart';
-import 'editShopDetails.dart';
+import 'editShopSectionsMenu.dart';
 
 
 class ShopListPage extends StatefulWidget {
@@ -287,11 +287,11 @@ class _ShopListPageState extends State<ShopListPage> {
                         IconButton(
                           icon: Icon(Icons.edit, color: Colors.white),
                           onPressed: () {
-                            // Navigate to EditShopPage with the shop ID and data
+                            // Navigate to EditShopSectionsMenu with the shop ID and data
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => EditShopPage(
+                                builder: (context) => EditShopSectionsMenu(
                                   shopId: portfolioId,
                                   shopData: data,
                                 ),

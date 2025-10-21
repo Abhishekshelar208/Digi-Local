@@ -92,11 +92,11 @@ class _EventSliderForDesigeOneState extends State<EventSliderForDesigeOne> {
                   return AnimatedContainer(
                     duration: Duration(milliseconds: 300),
                     margin: EdgeInsets.symmetric(horizontal: 4),
-                    width: isActive ? 12 : 8,
-                    height: isActive ? 12 : 8,
+                    width: isActive ? 24 : 8,
+                    height: 8,
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: isActive ? Colors.white : Colors.grey,
+                      borderRadius: BorderRadius.circular(4),
+                      color: isActive ? Color(0xFF6366F1) : Color(0xFFCBD5E1),
                     ),
                   );
                 }),
@@ -116,18 +116,26 @@ class _EventSliderForDesigeOneState extends State<EventSliderForDesigeOne> {
         duration: Duration(milliseconds: 300),
         transform: Matrix4.translationValues(0, 0, 0)..scale(1.02),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          gradient: LinearGradient(
+            colors: [Colors.white, Color(0xFFFAFAFA)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: Color(0xFFE2E8F0),
+            width: 1,
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.15),
-              blurRadius: 8,
-              offset: Offset(3, 3),
+              color: Color(0xFF64748B).withOpacity(0.12),
+              blurRadius: 24,
+              offset: Offset(0, 8),
             ),
           ],
         ),
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -146,7 +154,7 @@ class _EventSliderForDesigeOneState extends State<EventSliderForDesigeOne> {
                   child: Stack(
                     children: [
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(15),
+                        borderRadius: BorderRadius.circular(20),
                         child: Image.network(
                           widget.events[index]["image"],
                           width: double.infinity,
@@ -178,29 +186,31 @@ class _EventSliderForDesigeOneState extends State<EventSliderForDesigeOne> {
                     ],
                   ),
                 ),
-              SizedBox(height: 12),
+              SizedBox(height: 16),
               // Project title
               Text(
                 widget.events[index]["title"] ?? "No Title",
-                style: GoogleFonts.blinker(
-                  fontSize: 22,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
+                style: GoogleFonts.inter(
+                  fontSize: 20,
+                  color: Color(0xFF0F172A),
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.5,
                 ),
               ),
-              SizedBox(height: 6),
+              SizedBox(height: 8),
               // Description
               Text(
                 widget.events[index]["description"] ?? "No Description",
-                style: GoogleFonts.blinker(
+                style: GoogleFonts.inter(
                   fontSize: 14,
-                  color: Colors.grey[700],
+                  color: Color(0xFF64748B),
+                  fontWeight: FontWeight.w500,
                   height: 1.5,
                 ),
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 16),
               // // Product price
               // Text(
               //   "Price: ${widget.events[index]["productprice"] ?? "No Price"}",

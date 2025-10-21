@@ -23,75 +23,133 @@ class ConnectWithMedesignOne extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         bool isMobile = constraints.maxWidth < 600;
-        double iconSize = isMobile ? 35 : 40;
-        double textSize = isMobile ? 28 : 35;
-        double thankYouSize = isMobile ? 22 : 28;
-        double interestSize = isMobile ? 18 : 24;
+        double iconSize = isMobile ? 50 : 60;
+        double textSize = isMobile ? 32 : 42;
+        double thankYouSize = isMobile ? 24 : 32;
+        double interestSize = isMobile ? 16 : 20;
 
-        return Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("Connect with ",
-                    style: GoogleFonts.blinker(
-                      fontSize: textSize,
-                      color: Colors.grey[800],
-                      fontWeight: FontWeight.w500,
-                    )),
-                Text("Us",
-                    style: GoogleFonts.blinker(
-                      fontSize: textSize,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w600,
-                    )),
-              ],
+        return Container(
+          padding: EdgeInsets.symmetric(
+            vertical: isMobile ? 50 : 80,
+            horizontal: isMobile ? 20 : 40,
+          ),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFF8FAFC), Colors.white],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _socialIcon('lib/assets/images/newinsta.png', userData["accountLinks"]["instagram"] ?? ""),
-                SizedBox(width: MediaQuery.of(context).size.width > 600 ? 80 : 50),
-
-                _socialIcon('lib/assets/images/logo.png', 'https://wa.me/91${userData["accountLinks"]["whatsapp"] ?? ""}'),
-                SizedBox(width: MediaQuery.of(context).size.width > 600 ? 80 : 50),
-
-                _socialIcon('lib/assets/images/facebook.png', userData["accountLinks"]["facebook"] ?? ""),
-                // SizedBox(width: MediaQuery.of(context).size.width > 600 ? 80 : 50),
-              ],
-            ),
-
-            SizedBox(height: 20),
-            FittedBox(
-              child: Text("Thank you for visiting our store!",
-                  style: GoogleFonts.blinker(
-                    fontSize: thankYouSize,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w600,
-                  )),
-            ),
-            FittedBox(
-              child: Text("We truly appreciate your time and support for our local business.",
-                  style: GoogleFonts.blinker(
-                    fontSize: interestSize,
-                    color: Colors.grey[700],
-                    fontWeight: FontWeight.w600,
-                  )),
-            ),
-          ],
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Column(
+            children: [
+              Text(
+                "Connect with Us",
+                style: GoogleFonts.inter(
+                  fontSize: textSize,
+                  color: Color(0xFF0F172A),
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -1,
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                "Stay connected and follow us on social media",
+                style: GoogleFonts.inter(
+                  fontSize: interestSize,
+                  color: Color(0xFF64748B),
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 40),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _socialIcon('lib/assets/images/newinsta.png', userData["accountLinks"]["instagram"] ?? "", iconSize),
+                  SizedBox(width: isMobile ? 30 : 50),
+                  _socialIcon('lib/assets/images/logo.png', 'https://wa.me/91${userData["accountLinks"]["whatsapp"] ?? ""}', iconSize),
+                  SizedBox(width: isMobile ? 30 : 50),
+                  _socialIcon('lib/assets/images/facebook.png', userData["accountLinks"]["facebook"] ?? "", iconSize),
+                ],
+              ),
+              SizedBox(height: 50),
+              Container(
+                padding: EdgeInsets.all(isMobile ? 24 : 32),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Color(0xFFE2E8F0),
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0xFF64748B).withOpacity(0.08),
+                      blurRadius: 20,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      "Thank you for visiting our store!",
+                      style: GoogleFonts.inter(
+                        fontSize: thankYouSize,
+                        color: Color(0xFF0F172A),
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.5,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 12),
+                    Text(
+                      "We truly appreciate your time and support for our local business.",
+                      style: GoogleFonts.inter(
+                        fontSize: interestSize,
+                        color: Color(0xFF64748B),
+                        fontWeight: FontWeight.w500,
+                        height: 1.5,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
   }
 
-  Widget _socialIcon(String assetPath, String url) {
-    return GestureDetector(
-      onTap: () => _launchURL(url),
-      child: Container(
-        height: 40,
-        width: 40,
-        child: Image.asset(assetPath),
+  Widget _socialIcon(String assetPath, String url, double size) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () => _launchURL(url),
+        child: Container(
+          height: size,
+          width: size,
+          padding: EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: Color(0xFFE2E8F0),
+              width: 2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Color(0xFF64748B).withOpacity(0.1),
+                blurRadius: 16,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Image.asset(assetPath),
+        ),
       ),
     );
   }

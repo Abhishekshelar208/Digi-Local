@@ -524,6 +524,24 @@ class _ImprovedShopCreationPageState extends State<ImprovedShopCreationPage> wit
           "instagram": instagramController.text.trim().isEmpty ? "https://instagram.com/" : instagramController.text.trim(),
           "whatsapp": whatsappController.text.trim().isEmpty ? "https://web.whatsapp.com/" : whatsappController.text.trim(),
         },
+        "operationalStatus": "Open",
+        "closureReason": "",
+        "deliverySettings": {
+          "available": false,
+          "radius": "",
+          "minimumOrder": "",
+          "deliveryFee": "",
+          "timings": "",
+        },
+        "paymentMethods": ["Cash"],
+        "faqs": [],
+        "videos": [],
+        "shopGallery": [],
+        "reviews": [],
+        "totalVisits": 0,
+        "averageRating": 0.0,
+        "totalReviews": 0,
+        "verificationStatus": "Unverified",
       };
 
       await userRef.set(userData);

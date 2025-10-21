@@ -27,31 +27,20 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
 
-  final List<Color> boxColors = [
-    // Color(0xFF8f98ff),
-    // Color(0xFFfda88b),
-    // Color(0xFF4dc590),
-    // Color(0xFF66a3da),
-    // Color(0xFFff8181),
-    // Color(0xFFDCB0F2),
-    // Color(0xFFF6CF71),
-
-
-    Color(0xFF6cd5c6),
-    Color(0xFFfda88b),
-    Color(0xFF9bbef5),
-    Color(0xFFf59fd6),
-    Color(0xFFbba1f1),
-    Color(0xFF8ec7d3),
-    Color(0xFFa0d69a),
-
-    Color(0xFFfda88b),
-    Color(0xFF9bbef5),
-    Color(0xFFf59fd6),
-    Color(0xFFbba1f1),
-    Color(0xFF8ec7d3),
-    Color(0xFFa0d69a),
-
+  // Professional gradient color scheme for categories
+  final List<List<Color>> gradientColors = [
+    [Color(0xFF2E3192), Color(0xFF1BFFFF)], // Deep Blue to Cyan
+    [Color(0xFF134E5E), Color(0xFF71B280)], // Teal to Green
+    [Color(0xFF000428), Color(0xFF004e92)], // Dark Blue gradient
+    [Color(0xFF232526), Color(0xFF414345)], // Dark Grey gradient
+    [Color(0xFF0F2027), Color(0xFF2C5364)], // Dark Teal gradient
+    [Color(0xFF1e3c72), Color(0xFF2a5298)], // Royal Blue gradient
+    [Color(0xFF141E30), Color(0xFF243B55)], // Navy gradient
+    [Color(0xFF2C3E50), Color(0xFF3498DB)], // Dark to Blue
+    [Color(0xFF1C1C1C), Color(0xFF3A3A3A)], // Dark gradient
+    [Color(0xFF0F2027), Color(0xFF203A43)], // Deep Teal
+    [Color(0xFF2E3192), Color(0xFF1BFFFF)], // Repeat Blue Cyan
+    [Color(0xFF134E5E), Color(0xFF71B280)], // Repeat Teal Green
   ];
 
   void _fetchUsers(String category) async {
@@ -139,57 +128,142 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text(
           "Explore Categories",
-          style: GoogleFonts.blinker(fontSize: 34, fontWeight: FontWeight.w600, color: Colors.black),
+          style: GoogleFonts.blinker(fontSize: 28, fontWeight: FontWeight.w600, color: Colors.black),
         ),
         centerTitle: true,
-        backgroundColor: Color(0xffF2F0EF), //off white
+        backgroundColor: Color(0xffF2F0EF),
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-        child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 1.35,
-            crossAxisSpacing: 25,
-            mainAxisSpacing: 25,
-          ),
-          itemCount: categories.length,
-          itemBuilder: (context, index) {
-            var category = categories[index];
-            return GestureDetector(
-              onTap: () => _fetchUsers(category["name"]!),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: boxColors[index], // Applying different colors
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(color: Colors.black12, blurRadius: 4, spreadRadius: 2),
-                  ],
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Discover Local Shops",
+                  style: GoogleFonts.blinker(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(category["image"]!, height: 35, width: 60), // Using local image
-                    SizedBox(height: 5),
-                    FittedBox(
-                      child: Text(
-                        category["name"]!,
-                        style: GoogleFonts.blinker(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: index == 5 ? Colors.white : Colors.white, // Making text visible on white box
+                SizedBox(height: 4),
+                Text(
+                  "Browse by category",
+                  style: GoogleFonts.blinker(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.grey[600]),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 1.4,
+                  crossAxisSpacing: 14,
+                  mainAxisSpacing: 14,
+                ),
+                itemCount: categories.length,
+                itemBuilder: (context, index) {
+                  var category = categories[index];
+                  List<Color> gradient = gradientColors[index % gradientColors.length];
+                  return GestureDetector(
+                    onTap: () => _fetchUsers(category["name"]!),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: gradient,
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                        textAlign: TextAlign.center,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.12),
+                            blurRadius: 8,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () => _fetchUsers(category["name"]!),
+                          borderRadius: BorderRadius.circular(16),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Image.asset(
+                                    category["image"]!,
+                                    height: 28,
+                                    width: 28,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      category["name"]!,
+                                      style: GoogleFonts.blinker(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                        height: 1.2,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    SizedBox(height: 4),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          "Explore",
+                                          style: GoogleFonts.blinker(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.white70,
+                                          ),
+                                        ),
+                                        SizedBox(width: 4),
+                                        Icon(
+                                          Icons.arrow_forward,
+                                          size: 12,
+                                          color: Colors.white70,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
-            );
-          },
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
