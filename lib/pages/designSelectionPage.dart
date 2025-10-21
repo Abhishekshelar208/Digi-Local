@@ -1,4 +1,4 @@
-import 'package:digilocal/pages/userinfopageForApp.dart';
+import 'package:digilocal/pages/stepByStepShopCreation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -68,7 +68,7 @@ class _PortfolioDesignSelectionPageState
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => UserInfoPage(designName: selectedDesign),
+        builder: (context) => StepByStepShopCreation(designName: selectedDesign),
       ),
     );
   }
