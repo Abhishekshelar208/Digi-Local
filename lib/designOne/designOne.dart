@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../pages/AllReviewsPage.dart';
 import '../pages/displayServicesGridVise.dart';
 import '../pages/fullscreenimageview.dart';
+import '../theme/app_theme.dart';
 
 import 'AchivementsSliders/achivementsliderfordesignone.dart';
 import 'ConnectwithMe/connectwithmefordesignone.dart';
@@ -151,7 +152,7 @@ class _DesignOneState extends State<DesignOne> with SingleTickerProviderStateMix
     );
   }
 
-  // Reusable Widget for Statistic Card
+  // Reusable Widget for Statistic Card - NEW MODERN DESIGN
   Widget _buildStatCard(String title, String value) {
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -161,110 +162,230 @@ class _DesignOneState extends State<DesignOne> with SingleTickerProviderStateMix
         // Check if the device is a mobile or PC
         bool isMobile = screenWidth < 600;
 
-        return Container(
-          height: isMobile ? 110 : 160,
-          width: isMobile ? 160 : 220,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.white, Color(0xFFF8FAFC)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: Color(0xFFE2E8F0),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Color(0xFF64748B).withOpacity(0.08),
-                blurRadius: 20,
-                offset: Offset(0, 4),
-              ),
-            ],
-          ),
-          padding: EdgeInsets.all(isMobile ? 16 : 24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: GoogleFonts.inter(
-                  color: Color(0xFF64748B),
-                  fontSize: isMobile ? 13 : 15,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.3,
+        return TweenAnimationBuilder<double>(
+          tween: Tween(begin: 0.0, end: 1.0),
+          duration: Duration(milliseconds: 800),
+          builder: (context, animValue, child) {
+            return Transform.scale(
+              scale: 0.9 + (animValue * 0.1),
+              child: Opacity(
+                opacity: animValue,
+                child: Container(
+                  height: isMobile ? 130 : 180,
+                  width: isMobile ? 160 : 220,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppTheme.accentColor.withOpacity(0.1),
+                        AppTheme.secondaryColor.withOpacity(0.05),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: AppTheme.largeRadius,
+                    border: Border.all(
+                      color: AppTheme.accentColor.withOpacity(0.3),
+                      width: 2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppTheme.accentColor.withOpacity(0.2),
+                        blurRadius: 20,
+                        offset: Offset(0, 8),
+                        spreadRadius: 0,
+                      ),
+                    ],
+                  ),
+                  padding: EdgeInsets.all(isMobile ? 20 : 28),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          gradient: AppTheme.accentGradient,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          title,
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontSize: isMobile ? 11 : 13,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: isMobile ? 12 : 16),
+                      ShaderMask(
+                        shaderCallback: (bounds) => AppTheme.primaryGradient.createShader(bounds),
+                        child: Text(
+                          value,
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontSize: isMobile ? 32 : 44,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -1.5,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              SizedBox(height: isMobile ? 8 : 12),
-              Text(
-                value,
-                style: GoogleFonts.inter(
-                  color: Color(0xFF0F172A),
-                  fontSize: isMobile ? 32 : 42,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -1,
-                ),
-              ),
-            ],
-          ),
+            );
+          },
         );
       },
     );
   }
 
   Widget _buildSectionTitle(String title, double screenWidth) {
-    return Text(
-      title,
-      style: GoogleFonts.inter(
-        fontSize: screenWidth > 800 ? 48 : 32,
-        color: Color(0xFF0F172A),
-        fontWeight: FontWeight.w900,
-        letterSpacing: -1,
-      ),
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: Duration(milliseconds: 600),
+      builder: (context, animValue, child) {
+        return Opacity(
+          opacity: animValue,
+          child: Transform.translate(
+            offset: Offset(0, 20 * (1 - animValue)),
+            child: Column(
+              children: [
+                ShaderMask(
+                  shaderCallback: (bounds) => AppTheme.primaryGradient.createShader(bounds),
+                  child: Text(
+                    title,
+                    style: GoogleFonts.poppins(
+                      fontSize: screenWidth > 800 ? 52 : 36,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: -1.5,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 12),
+                Container(
+                  height: 4,
+                  width: 80,
+                  decoration: BoxDecoration(
+                    gradient: AppTheme.sunsetGradient,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
   Widget _buildInfoItem(IconData icon, String label, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: Color(0xFF6366F1).withOpacity(0.1),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(icon, size: 20, color: Color(0xFF6366F1)),
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppTheme.accentColor.withOpacity(0.05),
+            Colors.white,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: GoogleFonts.inter(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF64748B),
-                  letterSpacing: 0.3,
+        borderRadius: AppTheme.mediumRadius,
+        border: Border.all(
+          color: AppTheme.accentColor.withOpacity(0.2),
+          width: 1.5,
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              gradient: AppTheme.accentGradient,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: AppTheme.glowShadow(AppTheme.accentColor),
+            ),
+            child: Icon(icon, size: 24, color: Colors.white),
+          ),
+          SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textLight,
+                    letterSpacing: 1,
+                  ),
+                ),
+                SizedBox(height: 6),
+                Text(
+                  value,
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.textPrimary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Modern Divider Widget
+  Widget _buildModernDivider() {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 40),
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              height: 2,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.transparent,
+                    AppTheme.accentColor.withOpacity(0.5),
+                  ],
                 ),
               ),
-              SizedBox(height: 4),
-              Text(
-                value,
-                style: GoogleFonts.inter(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF0F172A),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              gradient: AppTheme.accentGradient,
+              shape: BoxShape.circle,
+              boxShadow: AppTheme.glowShadow(AppTheme.accentColor),
+            ),
+            child: Icon(Icons.auto_awesome, color: Colors.white, size: 20),
+          ),
+          Expanded(
+            child: Container(
+              height: 2,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppTheme.accentColor.withOpacity(0.5),
+                    Colors.transparent,
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -529,7 +650,7 @@ class _DesignOneState extends State<DesignOne> with SingleTickerProviderStateMix
               ? 30
               : 16;
           return Scaffold(
-            backgroundColor: Color(0xffFAFAFA),
+            backgroundColor: AppTheme.backgroundColor,
             body: NotificationListener<ScrollNotification>(
               onNotification: (notification) {
                 // Update the rotation angle when the user scrolls
@@ -555,44 +676,55 @@ class _DesignOneState extends State<DesignOne> with SingleTickerProviderStateMix
                             padding: EdgeInsets.only(
                               top: isMobile ? 40 : 60,
                             ),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                                borderRadius: BorderRadius.circular(50),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Color(0xFF6366F1).withOpacity(0.3),
-                                    blurRadius: 20,
-                                    offset: Offset(0, 10),
-                                  ),
-                                ],
-                              ),
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: () {},
-                                  borderRadius: BorderRadius.circular(50),
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: isMobile ? 28 : 40,
-                                      vertical: isMobile ? 16 : 18,
+                            child: TweenAnimationBuilder<double>(
+                              tween: Tween(begin: 0.0, end: 1.0),
+                              duration: Duration(milliseconds: 1000),
+                              curve: Curves.elasticOut,
+                              builder: (context, animValue, child) {
+                                return Transform.scale(
+                                  scale: animValue,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      gradient: AppTheme.sunsetGradient,
+                                      borderRadius: BorderRadius.circular(50),
+                                      boxShadow: AppTheme.glowShadow(AppTheme.secondaryColor),
                                     ),
-                                    child: Text(
-                                      "Welcome to ${widget.userData["shopInfo"]["shopName"]} 👋",
-                                      style: GoogleFonts.inter(
-                                        fontSize: isMobile ? 16.0 : 18.0,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                        letterSpacing: 0.5,
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                        onTap: () {},
+                                        borderRadius: BorderRadius.circular(50),
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: isMobile ? 32 : 48,
+                                            vertical: isMobile ? 18 : 22,
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons.storefront_rounded,
+                                                color: Colors.white,
+                                                size: isMobile ? 20 : 24,
+                                              ),
+                                              SizedBox(width: 12),
+                                              Text(
+                                                "Welcome to ${widget.userData["shopInfo"]["shopName"]} 👋",
+                                                style: GoogleFonts.poppins(
+                                                  fontSize: isMobile ? 16.0 : 18.0,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w700,
+                                                  letterSpacing: 0.5,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ),
+                                );
+                              },
                             ),
                           );
                         },
@@ -605,40 +737,68 @@ class _DesignOneState extends State<DesignOne> with SingleTickerProviderStateMix
                           double screenWidth = MediaQuery.of(context).size.width;
                           bool isMobile = screenWidth < 600;
 
-                          return Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: isMobile ? 20.0 : 60.0,
-                              vertical: 20.0,
-                            ),
-                            child: Column(
-                              children: [
-                                Text(
-                                  isMobile
-                                      ? "Welcome! Enjoy top-quality\nproducts and exceptional service."
-                                      : "Hello Everyone, Welcome to ${widget.userData["shopInfo"]["shopName"]}",
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.inter(
-                                    fontSize: isMobile ? screenWidth * 0.075 : 64,
-                                    fontWeight: FontWeight.w800,
-                                    color: Color(0xFF0F172A),
-                                    height: 1.2,
-                                    letterSpacing: -1.5,
-                                  ),
-                                ),
-                                if (!isMobile) SizedBox(height: 16),
-                                if (!isMobile)
-                                  Text(
-                                    "Bringing You the Best Products Every Day!",
-                                    textAlign: TextAlign.center,
-                                    style: GoogleFonts.inter(
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.w500,
-                                      color: Color(0xFF64748B),
-                                      letterSpacing: -0.5,
+                          return TweenAnimationBuilder<double>(
+                            tween: Tween(begin: 0.0, end: 1.0),
+                            duration: Duration(milliseconds: 1200),
+                            curve: Curves.easeOutCubic,
+                            builder: (context, animValue, child) {
+                              return Opacity(
+                                opacity: animValue,
+                                child: Transform.translate(
+                                  offset: Offset(0, 30 * (1 - animValue)),
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: isMobile ? 20.0 : 60.0,
+                                      vertical: 20.0,
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        ShaderMask(
+                                          shaderCallback: (bounds) => AppTheme.primaryGradient.createShader(bounds),
+                                          child: Text(
+                                            isMobile
+                                                ? "Welcome! Enjoy top-quality\nproducts and exceptional service."
+                                                : "Hello Everyone, Welcome to ${widget.userData["shopInfo"]["shopName"]}",
+                                            textAlign: TextAlign.center,
+                                            style: GoogleFonts.poppins(
+                                              fontSize: isMobile ? screenWidth * 0.08 : 68,
+                                              fontWeight: FontWeight.w900,
+                                              color: Colors.white,
+                                              height: 1.15,
+                                              letterSpacing: -2,
+                                            ),
+                                          ),
+                                        ),
+                                        if (!isMobile) SizedBox(height: 24),
+                                        if (!isMobile)
+                                          Container(
+                                            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                            decoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                colors: [
+                                                  AppTheme.highlightColor.withOpacity(0.2),
+                                                  AppTheme.accentColor.withOpacity(0.1),
+                                                ],
+                                              ),
+                                              borderRadius: BorderRadius.circular(30),
+                                            ),
+                                            child: Text(
+                                              "✨ Bringing You the Best Products Every Day! ✨",
+                                              textAlign: TextAlign.center,
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 22,
+                                                fontWeight: FontWeight.w600,
+                                                color: AppTheme.textSecondary,
+                                                letterSpacing: 0.5,
+                                              ),
+                                            ),
+                                          ),
+                                      ],
                                     ),
                                   ),
-                              ],
-                            ),
+                                ),
+                              );
+                            },
                           );
                         },
                       ),
@@ -1012,15 +1172,7 @@ class _DesignOneState extends State<DesignOne> with SingleTickerProviderStateMix
                       ),
 
 
-                      Text(
-                        "Services We Offered",
-                        style: GoogleFonts.inter(
-                          fontSize: screenWidth > 800 ? 48 : 32,
-                          color: Color(0xFF0F172A),
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: -1,
-                        ),
-                      ),
+                      _buildSectionTitle("Services We Offered", screenWidth),
                       SizedBox(
                         height: 30,
                       ),
@@ -1029,15 +1181,7 @@ class _DesignOneState extends State<DesignOne> with SingleTickerProviderStateMix
 
                       SizedBox(height: 50,),
 
-                      Text(
-                        "Our Products Category",
-                        style: GoogleFonts.inter(
-                          fontSize: screenWidth > 800 ? 48 : 32,
-                          color: Color(0xFF0F172A),
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: -1,
-                        ),
-                      ),
+                      _buildSectionTitle("Our Products Category", screenWidth),
                       SizedBox(
                         height: 30,
                       ),
@@ -1046,66 +1190,55 @@ class _DesignOneState extends State<DesignOne> with SingleTickerProviderStateMix
 
                       SizedBox(height: 50,),
 
-                      Text(
-                        "Use Our Coupons",
-                        style: GoogleFonts.inter(
-                          fontSize: screenWidth > 800 ? 48 : 32,
-                          color: Color(0xFF0F172A),
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: -1,
-                        ),
-                      ),
+                      _buildSectionTitle("🎉 Use Our Exclusive Coupons", screenWidth),
                       SizedBox(
                         height: 30,
                       ),
                       Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [Color(0xFFF8FAFC), Colors.white],
+                            colors: [
+                              AppTheme.accentColor.withOpacity(0.08),
+                              AppTheme.highlightColor.withOpacity(0.05),
+                            ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
-                          border: Border.all(color: Color(0xFFE2E8F0), width: 2),
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(0xFF64748B).withOpacity(0.1),
-                              blurRadius: 20,
-                              offset: Offset(0, 4),
-                            ),
-                          ],
+                          border: Border.all(
+                            color: AppTheme.accentColor.withOpacity(0.3),
+                            width: 2,
+                          ),
+                          borderRadius: AppTheme.largeRadius,
+                          boxShadow: AppTheme.cardShadow,
                         ),
-                        height: 65,
+                        height: 75,
                         width: MediaQuery.of(context).size.width > 600 ? 1100 : double.infinity,
                         child: MarqueeChips(
                           velocity: 30.0,
                           chips: (widget.userData["coupons"] as List<dynamic>).map<Widget>((skill) {
                             return Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                              margin: const EdgeInsets.symmetric(horizontal: 10.0),
+                              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
+                                gradient: AppTheme.sunsetGradient,
                                 borderRadius: BorderRadius.circular(30),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Color(0xFF6366F1).withOpacity(0.3),
-                                    blurRadius: 8,
-                                    offset: Offset(0, 2),
+                                boxShadow: AppTheme.glowShadow(AppTheme.secondaryColor),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.local_offer, color: Colors.white, size: 18),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    skill.toString(),
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 0.5,
+                                    ),
                                   ),
                                 ],
-                              ),
-                              child: Text(
-                                skill.toString(),
-                                style: GoogleFonts.inter(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  letterSpacing: 0.5,
-                                ),
                               ),
                             );
                           }).toList(),
@@ -1116,19 +1249,7 @@ class _DesignOneState extends State<DesignOne> with SingleTickerProviderStateMix
                         height: 50,
                       ),
 
-                      Container(
-                        margin: EdgeInsets.symmetric(vertical: 20),
-                        height: 1,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.transparent,
-                              Color(0xFFE2E8F0),
-                              Colors.transparent,
-                            ],
-                          ),
-                        ),
-                      ),
+                      _buildModernDivider(),
 
 
 
@@ -1140,15 +1261,7 @@ class _DesignOneState extends State<DesignOne> with SingleTickerProviderStateMix
                       SizedBox(
                         height: 15,
                       ),
-                      Text(
-                        "Our Featured Products",
-                        style: GoogleFonts.inter(
-                          fontSize: screenWidth > 800 ? 48 : 32,
-                          color: Color(0xFF0F172A),
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: -1,
-                        ),
-                      ),
+                      _buildSectionTitle("Our Featured Products", screenWidth),
                       SizedBox(
                         height: 30,
                       ),
@@ -1158,19 +1271,7 @@ class _DesignOneState extends State<DesignOne> with SingleTickerProviderStateMix
                         height: 50,
                       ),
 
-                      Container(
-                        margin: EdgeInsets.symmetric(vertical: 20),
-                        height: 1,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.transparent,
-                              Color(0xFFE2E8F0),
-                              Colors.transparent,
-                            ],
-                          ),
-                        ),
-                      ),
+                      _buildModernDivider(),
 
 
 

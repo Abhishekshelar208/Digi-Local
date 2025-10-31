@@ -27,20 +27,26 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
 
-  // Professional gradient color scheme for categories
+  // DigiLocal gradient color scheme for categories
   final List<List<Color>> gradientColors = [
-    [Color(0xFF2E3192), Color(0xFF1BFFFF)], // Deep Blue to Cyan
-    [Color(0xFF134E5E), Color(0xFF71B280)], // Teal to Green
-    [Color(0xFF000428), Color(0xFF004e92)], // Dark Blue gradient
-    [Color(0xFF232526), Color(0xFF414345)], // Dark Grey gradient
-    [Color(0xFF0F2027), Color(0xFF2C5364)], // Dark Teal gradient
-    [Color(0xFF1e3c72), Color(0xFF2a5298)], // Royal Blue gradient
-    [Color(0xFF141E30), Color(0xFF243B55)], // Navy gradient
-    [Color(0xFF2C3E50), Color(0xFF3498DB)], // Dark to Blue
-    [Color(0xFF1C1C1C), Color(0xFF3A3A3A)], // Dark gradient
-    [Color(0xFF0F2027), Color(0xFF203A43)], // Deep Teal
-    [Color(0xFF2E3192), Color(0xFF1BFFFF)], // Repeat Blue Cyan
-    [Color(0xFF134E5E), Color(0xFF71B280)], // Repeat Teal Green
+    [Color(0xFF3B82F6), Color(0xFF3B82F6)], // Primary: Soft Indigo to Vibrant Blue
+    [Color(0xFF16A34A), Color(0xFF16A34A)], // Success: Emerald Green gradient
+
+
+    [Color(0xFFF97316), Color(0xFFF97316)], // Pink to Orange
+    [Color(0xFF6366F1), Color(0xFF6366F1)], // Purple to Indigo
+    [Color(0xFF0D9488), Color(0xFF0D9488)], // Teal gradient
+    [Color(0xFFEF4444), Color(0xFFEF4444)], // Orange to Red
+
+    [Color(0xFF4C6EF5), Color(0xFF4C6EF5)], // Indigo variations
+    [Color(0xFF0EA5E9), Color(0xFF0EA5E9)], // Sky Blue gradient
+
+
+    [Color(0xFFEC4899), Color(0xFFEC4899)], // Purple to Pink
+    [Color(0xFF16A34A), Color(0xFF16A34A)], // Success: Emerald Green gradient
+
+
+    [Color(0xFFF97316), Color(0xFFF97316)], // Pink to Orange
   ];
 
   void _fetchUsers(String category) async {
@@ -124,16 +130,16 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xffF2F0EF), //off white
+      backgroundColor: Color(0xFFFFFFFF), // Pure White
       appBar: AppBar(
         title: Text(
           "Explore Categories",
-          style: GoogleFonts.blinker(fontSize: 28, fontWeight: FontWeight.w600, color: Colors.black),
+          style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF1F2937)),
         ),
         centerTitle: true,
-        backgroundColor: Color(0xffF2F0EF),
+        backgroundColor: Color(0xFFFFFFFF),
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: IconThemeData(color: Color(0xFF4C6EF5)),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,18 +151,18 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Text(
                   "Discover Local Shops",
-                  style: GoogleFonts.blinker(
-                      fontSize: 22,
+                  style: GoogleFonts.poppins(
+                      fontSize: 20,
                       fontWeight: FontWeight.w600,
-                      color: Colors.black87),
+                      color: Color(0xFF1F2937)),
                 ),
                 SizedBox(height: 4),
                 Text(
                   "Browse by category",
-                  style: GoogleFonts.blinker(
+                  style: GoogleFonts.inter(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
-                      color: Colors.grey[600]),
+                      color: Color(0xFF6B7280)),
                 ),
               ],
             ),
@@ -184,12 +190,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.12),
-                            blurRadius: 8,
-                            offset: Offset(0, 4),
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
                           ),
                         ],
                       ),
@@ -197,7 +203,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: Colors.transparent,
                         child: InkWell(
                           onTap: () => _fetchUsers(category["name"]!),
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(20),
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Column(
@@ -207,13 +213,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Container(
                                   padding: EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(10),
+                                    color: Colors.white.withOpacity(0.25),
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Image.asset(
                                     category["image"]!,
-                                    height: 28,
-                                    width: 28,
+                                    height: 26,
+                                    width: 26,
                                     color: Colors.white,
                                   ),
                                 ),
@@ -222,8 +228,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   children: [
                                     Text(
                                       category["name"]!,
-                                      style: GoogleFonts.blinker(
-                                        fontSize: 16,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 15,
                                         fontWeight: FontWeight.w600,
                                         color: Colors.white,
                                         height: 1.2,
@@ -236,17 +242,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                       children: [
                                         Text(
                                           "Explore",
-                                          style: GoogleFonts.blinker(
+                                          style: GoogleFonts.inter(
                                             fontSize: 12,
                                             fontWeight: FontWeight.w500,
-                                            color: Colors.white70,
+                                            color: Colors.white.withOpacity(0.85),
                                           ),
                                         ),
                                         SizedBox(width: 4),
                                         Icon(
                                           Icons.arrow_forward,
                                           size: 12,
-                                          color: Colors.white70,
+                                          color: Colors.white.withOpacity(0.85),
                                         ),
                                       ],
                                     ),

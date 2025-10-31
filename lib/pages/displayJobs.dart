@@ -25,24 +25,32 @@ class JobsListPage extends StatefulWidget {
   _JobsListPageState createState() => _JobsListPageState();
 }
 
-class _JobsListPageState extends State<JobsListPage> {
+class _JobsListPageState extends State<JobsListPage> with SingleTickerProviderStateMixin {
   final DatabaseReference _database = FirebaseDatabase.instance.ref().child("jobs");
   List<Map<String, dynamic>> jobs = [];
-
-  final List<Color> boxColors = [
-    Color(0xFF6cd5c6),
-    Color(0xFFfda88b),
-    Color(0xFF9bbef5),
-    Color(0xFFf59fd6),
-    Color(0xFFbba1f1),
-    Color(0xFF8ec7d3),
-    Color(0xFFa0d69a),
-  ];
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 800),
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+    _animationController.forward();
     _fetchJobs();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchJobs() async {
@@ -61,6 +69,11 @@ class _JobsListPageState extends State<JobsListPage> {
               "creator": entry.value["creator"],
             };
           }).toList();
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _isLoading = false;
         });
       }
     });
@@ -68,105 +81,337 @@ class _JobsListPageState extends State<JobsListPage> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double paddingValue = screenWidth > 800 ? 80.0 : 24.0;
+    bool isDesktop = screenWidth > 800;
+
     return Scaffold(
-      backgroundColor: Color(0xffF2F0EF),
+      backgroundColor: Color(0xFFF8FAFC),
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: Color(0xFF0F172A)),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: Text(
           "Jobs & Vacancies",
-          style: GoogleFonts.blinker(fontSize: 34, fontWeight: FontWeight.w600, color: Colors.black),
+          style: GoogleFonts.inter(
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF0F172A),
+          ),
         ),
         centerTitle: true,
-        backgroundColor: Color(0xffF2F0EF),
-        elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
       ),
-      body: Column(
-        children: [
-          SizedBox(height: 16),
-          Expanded(
-            child: ListView.builder(
-              itemCount: jobs.length,
-              itemBuilder: (context, index) {
-                var job = jobs[index];
-                return Container(
-                  height: 150,
-                  margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    elevation: 4,
-                    color: boxColors[index % boxColors.length],
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6366F1)),
+              ),
+            )
+          : FadeTransition(
+              opacity: _fadeAnimation,
+              child: jobs.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                FittedBox(
-                                  child: Text(
-                                    job["name"],
-                                    style: GoogleFonts.blinker(
-                                        fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                FittedBox(
-                                  child: Text(
-                                    "Posted By: ${job["shopName"]}",
-                                    style: GoogleFonts.blinker(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
-                                  ),
-                                ),
-                                Text(
-                                  "Last Date for Apply : ${formatDeadline(job["deadline"])}",
-                                  style: GoogleFonts.blinker(color: Colors.black54, fontSize: 17, fontWeight: FontWeight.w600),
-                                ),
-                              ],
+                          Container(
+                            padding: EdgeInsets.all(32),
+                            decoration: BoxDecoration(
+                              color: Color(0xFFF1F5F9),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.work_outline,
+                              size: 64,
+                              color: Color(0xFF94A3B8),
                             ),
                           ),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.grey[100],
-                              foregroundColor: boxColors[index % boxColors.length],
+                          SizedBox(height: 24),
+                          Text(
+                            "No Jobs Available",
+                            style: GoogleFonts.inter(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF0F172A),
                             ),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => JobsDetailsPage(
-
-                                      challengeId: job["id"], challenge: job,),
-                                ),
-                              );
-                            },
-                            child: Text(
-                              "View",
-                              style: GoogleFonts.blinker(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            "Check back later for new opportunities",
+                            style: GoogleFonts.inter(
+                              fontSize: 16,
+                              color: Color(0xFF64748B),
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
                       ),
+                    )
+                  : SingleChildScrollView(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: paddingValue, vertical: 24.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Page Header
+                            Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Color(0xFF6366F1).withOpacity(0.3),
+                                        blurRadius: 10,
+                                        offset: Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Icon(Icons.work, color: Colors.white, size: 28),
+                                ),
+                                SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Available Jobs",
+                                        style: GoogleFonts.inter(
+                                          fontSize: isDesktop ? 32 : 24,
+                                          fontWeight: FontWeight.w900,
+                                          color: Color(0xFF0F172A),
+                                        ),
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        "${jobs.length} job${jobs.length != 1 ? 's' : ''} available",
+                                        style: GoogleFonts.inter(
+                                          fontSize: 15,
+                                          color: Color(0xFF64748B),
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 24),
+
+                            // Jobs List
+                            ...jobs.asMap().entries.map((entry) {
+                              int index = entry.key;
+                              var job = entry.value;
+
+                              return TweenAnimationBuilder<double>(
+                                tween: Tween(begin: 0.0, end: 1.0),
+                                duration: Duration(milliseconds: 600 + (index * 100)),
+                                builder: (context, animValue, child) {
+                                  return Opacity(
+                                    opacity: animValue,
+                                    child: Transform.translate(
+                                      offset: Offset(0, 20 * (1 - animValue)),
+                                      child: Container(
+                                        margin: EdgeInsets.only(bottom: 16),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(20),
+                                          border: Border.all(color: Color(0xFFE2E8F0), width: 2),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Color(0xFF64748B).withOpacity(0.08),
+                                              blurRadius: 20,
+                                              offset: Offset(0, 4),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(20.0),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Container(
+                                                    padding: EdgeInsets.all(12),
+                                                    decoration: BoxDecoration(
+                                                      gradient: LinearGradient(
+                                                        colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                                                      ),
+                                                      borderRadius: BorderRadius.circular(12),
+                                                    ),
+                                                    child: Icon(Icons.business_center, color: Colors.white, size: 24),
+                                                  ),
+                                                  SizedBox(width: 16),
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          job["name"],
+                                                          style: GoogleFonts.inter(
+                                                            fontSize: 20,
+                                                            fontWeight: FontWeight.w700,
+                                                            color: Color(0xFF0F172A),
+                                                          ),
+                                                        ),
+                                                        SizedBox(height: 4),
+                                                        Row(
+                                                          children: [
+                                                            Icon(Icons.store, size: 16, color: Color(0xFF64748B)),
+                                                            SizedBox(width: 6),
+                                                            Expanded(
+                                                              child: Text(
+                                                                job["shopName"],
+                                                                style: GoogleFonts.inter(
+                                                                  fontSize: 15,
+                                                                  color: Color(0xFF64748B),
+                                                                  fontWeight: FontWeight.w500,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              SizedBox(height: 16),
+                                              Container(
+                                                padding: EdgeInsets.all(12),
+                                                decoration: BoxDecoration(
+                                                  color: Color(0xFFF8FAFC),
+                                                  borderRadius: BorderRadius.circular(12),
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    Icon(Icons.calendar_today, size: 18, color: Color(0xFFEF4444)),
+                                                    SizedBox(width: 8),
+                                                    Text(
+                                                      "Apply by: ",
+                                                      style: GoogleFonts.inter(
+                                                        fontSize: 14,
+                                                        color: Color(0xFF64748B),
+                                                        fontWeight: FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      formatDeadline(job["deadline"]),
+                                                      style: GoogleFonts.inter(
+                                                        fontSize: 14,
+                                                        color: Color(0xFFEF4444),
+                                                        fontWeight: FontWeight.w700,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              SizedBox(height: 16),
+                                              Container(
+                                                width: double.infinity,
+                                                height: 44,
+                                                decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                                                  ),
+                                                  borderRadius: BorderRadius.circular(12),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Color(0xFF6366F1).withOpacity(0.3),
+                                                      blurRadius: 8,
+                                                      offset: Offset(0, 2),
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: ElevatedButton(
+                                                  style: ElevatedButton.styleFrom(
+                                                    backgroundColor: Colors.transparent,
+                                                    shadowColor: Colors.transparent,
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(12),
+                                                    ),
+                                                  ),
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) => JobsDetailsPage(
+                                                          challengeId: job["id"],
+                                                          challenge: job,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: Text(
+                                                    "View Details",
+                                                    style: GoogleFonts.inter(
+                                                      fontSize: 15,
+                                                      fontWeight: FontWeight.w600,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            }).toList(),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                );
-              },
             ),
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
           ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => CreateJobsPage()),
-          );
-        },
-        label: Icon(Icons.add, color: Colors.black),
-        backgroundColor: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Color(0xFF6366F1).withOpacity(0.4),
+              blurRadius: 12,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CreateJobsPage()),
+            );
+          },
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          label: Row(
+            children: [
+              Icon(Icons.add, color: Colors.white),
+              SizedBox(width: 8),
+              Text(
+                "Create Job",
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -517,107 +762,251 @@ class _JobsDetailsPageState extends State<JobsDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double paddingValue = screenWidth > 800 ? 80.0 : 24.0;
+
     return Scaffold(
-      backgroundColor: Color(0xffF2F0EF),
+      backgroundColor: Color(0xFFF8FAFC),
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: Color(0xFF0F172A)),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: Text(
-          "Jobs Details",
-          style: GoogleFonts.blinker(
-              fontSize: 34, fontWeight: FontWeight.w600, color: Colors.black),
+          "Job Details",
+          style: GoogleFonts.inter(
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF0F172A),
+          ),
         ),
         centerTitle: true,
-        backgroundColor: Color(0xffF2F0EF),
-        elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Card with a scrollable content area
-              SizedBox(
-                width: double.infinity,
-                height: 350,
-                child: Card(
-                  color: Color(0xFFFFFFFF),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
-                  elevation: 5,
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Center(
-                            child: Text(
-                              widget.challenge["name"],
-                              style: GoogleFonts.blinker(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black),
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            "About Job:",
-                            style: GoogleFonts.blinker(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey[700]),
-                          ),
-                          Text(
-                            widget.challenge["description"],
-                            style: GoogleFonts.blinker(
-                                fontSize: 16,
-                                color: Colors.black54,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            "Who can apply:",
-                            style: GoogleFonts.blinker(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey[700]),
-                          ),
-                          Text(
-                            widget.challenge["requirement"],
-                            style: GoogleFonts.blinker(
-                                fontSize: 16,
-                                color: Colors.black54,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            "Last Date for Apply : ${formatDeadline(widget.challenge["deadline"])}",
-                            style: GoogleFonts.blinker(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey[700]),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            "Created By: ${widget.challenge["shopName"]}",
-                            style: GoogleFonts.blinker(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey[700]),
-                          ),
-                        ],
+          padding: EdgeInsets.symmetric(horizontal: paddingValue, vertical: 24.0),
+          child: Container(
+            constraints: BoxConstraints(maxWidth: 800),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header Icon
+                Center(
+                  child: Container(
+                    padding: EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
                       ),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0xFF6366F1).withOpacity(0.4),
+                          blurRadius: 20,
+                          offset: Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      Icons.work,
+                      size: 48,
+                      color: Colors.white,
                     ),
                   ),
                 ),
-              ),
-              SizedBox(height: 50),
+                SizedBox(height: 32),
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
+                // Job Title
+                Center(
+                  child: Text(
+                    widget.challenge["name"],
+                    style: GoogleFonts.inter(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF0F172A),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                SizedBox(height: 8),
+
+                // Shop Name
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.store, size: 18, color: Color(0xFF64748B)),
+                      SizedBox(width: 8),
+                      Text(
+                        widget.challenge["shopName"],
+                        style: GoogleFonts.inter(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF64748B),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 32),
+
+                // Main Content Card
+                Container(
+                  padding: EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: Color(0xFFE2E8F0), width: 2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0xFF64748B).withOpacity(0.08),
+                        blurRadius: 20,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // About Job Section
+                      Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Color(0xFF6366F1).withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Icon(Icons.description, color: Color(0xFF6366F1), size: 20),
+                          ),
+                          SizedBox(width: 12),
+                          Text(
+                            "About Job",
+                            style: GoogleFonts.inter(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF0F172A),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        widget.challenge["description"],
+                        style: GoogleFonts.inter(
+                          fontSize: 15,
+                          color: Color(0xFF64748B),
+                          fontWeight: FontWeight.w500,
+                          height: 1.6,
+                        ),
+                      ),
+                      SizedBox(height: 24),
+
+                      // Divider
+                      Container(
+                        height: 1,
+                        color: Color(0xFFE2E8F0),
+                      ),
+                      SizedBox(height: 24),
+
+                      // Requirements Section
+                      Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Color(0xFF10B981).withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Icon(Icons.check_circle_outline, color: Color(0xFF10B981), size: 20),
+                          ),
+                          SizedBox(width: 12),
+                          Text(
+                            "Who Can Apply",
+                            style: GoogleFonts.inter(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF0F172A),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        widget.challenge["requirement"],
+                        style: GoogleFonts.inter(
+                          fontSize: 15,
+                          color: Color(0xFF64748B),
+                          fontWeight: FontWeight.w500,
+                          height: 1.6,
+                        ),
+                      ),
+                      SizedBox(height: 24),
+
+                      // Deadline Badge
+                      Container(
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Color(0xFFEF4444).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Color(0xFFEF4444).withOpacity(0.3), width: 2),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.calendar_today, color: Color(0xFFEF4444), size: 20),
+                            SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Application Deadline",
+                                    style: GoogleFonts.inter(
+                                      fontSize: 13,
+                                      color: Color(0xFFEF4444),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    formatDeadline(widget.challenge["deadline"]),
+                                    style: GoogleFonts.inter(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xFFEF4444),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 32),
+
+                // Apply Button
+                Container(
+                  width: double.infinity,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0xFF6366F1).withOpacity(0.4),
+                        blurRadius: 12,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -627,115 +1016,31 @@ class _JobsDetailsPageState extends State<JobsDetailsPage> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepOrangeAccent, // Background color changed to red
-                      foregroundColor: Colors.white, // Text color white for contrast
-                      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10), // Increased size
-                      minimumSize: Size(200, 0), // Explicitly setting width and height
-                    ),
-                    child: Text(
-                      "Apply",
-                      style: GoogleFonts.blinker(
-                        color: Colors.white, // Set color to white to ensure the gradient is visible
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
                       ),
                     ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.send, color: Colors.white, size: 20),
+                        SizedBox(width: 12),
+                        Text(
+                          "Apply for this Job",
+                          style: GoogleFonts.inter(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   children: [
-              //     ElevatedButton(
-              //       onPressed: _joinChallenge,
-              //       style: ElevatedButton.styleFrom(
-              //         backgroundColor: Colors.deepOrangeAccent,
-              //         foregroundColor: Colors.white,
-              //         padding:
-              //         EdgeInsets.symmetric(horizontal: 60, vertical: 15),
-              //         minimumSize: Size(200, 0),
-              //       ),
-              //       child: Text(
-              //         "Join Offer",
-              //         style: GoogleFonts.blinker(
-              //             fontSize: 18,
-              //             fontWeight: FontWeight.bold,
-              //             color: Colors.white),
-              //       ),
-              //     ),
-              //   ],
-              // ),
-              SizedBox(height: 20),
-              //
-              // // Show Chat Button Only If User Has Joined
-              // if (_isUserJoined)
-              //   Row(
-              //     mainAxisAlignment: MainAxisAlignment.center,
-              //     children: [
-              //       ElevatedButton(
-              //         onPressed: () {
-              //           // Navigate to chat screen
-              //           Navigator.push(
-              //             context,
-              //             MaterialPageRoute(
-              //                 builder: (context) => ChatScreenForCommunity(
-              //                   challengeId: widget.challengeId,
-              //                 )),
-              //           );
-              //         },
-              //         style: ElevatedButton.styleFrom(
-              //           backgroundColor: Colors.blue,
-              //           foregroundColor: Colors.white,
-              //           padding:
-              //           EdgeInsets.symmetric(horizontal: 60, vertical: 15),
-              //           minimumSize: Size(200, 0),
-              //         ),
-              //         child: Text(
-              //           "Open Chat",
-              //           style: GoogleFonts.blinker(
-              //               fontSize: 18,
-              //               fontWeight: FontWeight.bold,
-              //               color: Colors.white),
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-
-              // SizedBox(height: 30),
-              // Text(
-              //   "Community Members",
-              //   style: GoogleFonts.blinker(
-              //       fontSize: 26,
-              //       fontWeight: FontWeight.w600,
-              //       color: Colors.black),
-              // ),
-              // SizedBox(height: 10),
-              // ListView.builder(
-              //   shrinkWrap: true,
-              //   itemCount: joinedUsers.length,
-              //   itemBuilder: (context, index) {
-              //     var user = joinedUsers[index];
-              //     return Card(
-              //       color: Colors.white,
-              //       shape: RoundedRectangleBorder(
-              //           borderRadius: BorderRadius.circular(20)),
-              //       margin: EdgeInsets.symmetric(vertical: 5),
-              //       child: ListTile(
-              //         title: Text(user["name"] ?? "Unknown",
-              //             style: GoogleFonts.blinker(
-              //                 fontSize: 22,
-              //                 fontWeight: FontWeight.bold,
-              //                 color: Colors.grey[700])),
-              //         subtitle: Text(user["email"] ?? "No email",
-              //             style: GoogleFonts.blinker(
-              //                 fontSize: 18,
-              //                 fontWeight: FontWeight.w500,
-              //                 color: Colors.black54)),
-              //       ),
-              //     );
-              //   },
-              // ),
-            ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

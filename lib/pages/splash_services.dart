@@ -74,7 +74,7 @@ class SplashServicesForStudent {
         // User is not logged in, redirect to CreateStudentID
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => googleSignIn()),
+          MaterialPageRoute(builder: (context) => GoogleSignIn()),
         );
       }
     } catch (e) {

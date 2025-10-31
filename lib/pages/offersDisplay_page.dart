@@ -1,206 +1,3 @@
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:flutter/material.dart';
-// import 'package:firebase_database/firebase_database.dart';
-// import 'package:google_fonts/google_fonts.dart';
-// import 'package:intl/intl.dart';
-//
-// import 'create_offers.dart';
-//
-// String formatDeadline(String dateString) {
-//   try {
-//     DateTime date = DateTime.parse(dateString); // Parse the date
-//     return DateFormat('d MMM y').format(date); // Format to "23 Dec"
-//   } catch (e) {
-//     return dateString; // Return original if parsing fails
-//   }
-// }
-//
-//
-//
-// class OfferListPage extends StatefulWidget {
-//   @override
-//   _OfferListPageState createState() => _OfferListPageState();
-// }
-//
-//
-//
-// class _OfferListPageState extends State<OfferListPage> {
-//   final DatabaseReference _database =
-//   FirebaseDatabase.instance.ref().child("offers");
-//   List<Map<String, dynamic>> offers = [];
-//
-//   final List<Color> boxColors = [
-//     // Color(0xFF8f98ff),
-//     // Color(0xFFfda88b),
-//     // Color(0xFF4dc590),
-//     // Color(0xFF66a3da),
-//     // Color(0xFFff8181),
-//     // Color(0xFFDCB0F2),
-//     // Color(0xFFF6CF71),
-//
-//
-//     Color(0xFF6cd5c6),
-//     Color(0xFFfda88b),
-//     Color(0xFF9bbef5),
-//     Color(0xFFf59fd6),
-//     Color(0xFFbba1f1),
-//     Color(0xFF8ec7d3),
-//     Color(0xFFa0d69a),
-//
-//   ];
-//
-//
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     _fetchChallenges();
-//   }
-//
-//   Future<void> _fetchChallenges() async {
-//     _database.onValue.listen((event) {
-//       if (event.snapshot.exists) {
-//         Map<dynamic, dynamic> challengesData =
-//         event.snapshot.value as Map<dynamic, dynamic>;
-//         setState(() {
-//           offers = challengesData.entries.map((entry) {
-//             return {
-//               "id": entry.key,
-//               "name": entry.value["name"],
-//               "description": entry.value["description"],
-//               "coupon": entry.value["coupon"],
-//               "deadline": entry.value["deadline"],
-//               "creator": entry.value["creator"],
-//             };
-//           }).toList();
-//         });
-//       }
-//     });
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Color(0xffF2F0EF), //off white,
-//       appBar: AppBar(
-//         title: Text(
-//           "Discounts & Offers",
-//           style: GoogleFonts.blinker(
-//               fontSize: 34,
-//               fontWeight: FontWeight.w600,
-//               color: Colors.black),
-//         ),
-//         centerTitle: true,
-//         backgroundColor: Color(0xffF2F0EF), //off white,
-//         elevation: 0,
-//         iconTheme: IconThemeData(color: Colors.black),
-//       ),
-//       body: Column(
-//         children: [
-//           SizedBox(height: 16), // Space after AppBar
-//           Expanded(
-//             child: ListView.builder(
-//               itemCount: offers.length,
-//               itemBuilder: (context, index) {
-//                 var challenge = offers[index];
-//                 return Container(
-//                   height: 170, // Increased card height
-//                   margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-//                   child: Card(
-//                     shape: RoundedRectangleBorder(
-//                       borderRadius: BorderRadius.circular(20), // Rounded corners
-//                     ),
-//                     elevation: 4,
-//                     color: boxColors[index % boxColors.length], // Assigning colors sequentially
-//                     child: Padding(
-//                       padding: const EdgeInsets.all(12.0),
-//                       child: Row(
-//                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                         children: [
-//                           Expanded(
-//                             child: Column(
-//                               crossAxisAlignment: CrossAxisAlignment.start,
-//                               mainAxisAlignment: MainAxisAlignment.center,
-//                               children: [
-//                                 FittedBox(
-//                                   child: Text(
-//                                     challenge["name"],
-//                                     style: GoogleFonts.blinker(
-//                                         fontSize: 30,
-//                                         fontWeight: FontWeight.bold,
-//                                         color: Colors.white),
-//                                   ),
-//                                 ),
-//                                 SizedBox(height: 5),
-//                                 FittedBox(
-//                                   child: Text(
-//                                     "Created By: ${challenge["creator"]}",
-//                                     style: GoogleFonts.blinker(color: Colors.white,fontSize: 17,fontWeight: FontWeight.w600),
-//                                   ),
-//                                 ),
-//                                 Text("Ends At: ${formatDeadline(challenge["deadline"])}",
-//                                   style: GoogleFonts.blinker(color: Colors.black54,fontSize: 17, fontWeight: FontWeight.w600),
-//                                 ),
-//                                 SizedBox(height: 5),
-//                                 Row(
-//                                   children: [
-//                                     Icon(Icons.thumb_up_alt_outlined),
-//                                     SizedBox(width: 10),
-//                                     Icon(Icons.thumb_down_alt_outlined),
-//                                   ],
-//                                 ),
-//                               ],
-//                             ),
-//                           ),
-//                           ElevatedButton(
-//                             style: ElevatedButton.styleFrom(
-//                               backgroundColor: Colors.grey[100],
-//                               foregroundColor: boxColors[index % boxColors.length], // Button text color
-//                             ),
-//                             onPressed: () {
-//                               Navigator.push(
-//                                 context,
-//                                 MaterialPageRoute(
-//                                   builder: (context) => OffersDetailPage(
-//                                       challengeId: challenge["id"],
-//                                       challenge: challenge),
-//                                 ),
-//                               );
-//                             },
-//                             child: Text("View",style: GoogleFonts.blinker(
-//                                 fontSize: 18,
-//                                 fontWeight: FontWeight.w600,
-//                                 color: Colors.black),),
-//                           ),
-//                         ],
-//                       ),
-//                     ),
-//                   ),
-//                 );
-//               },
-//             ),
-//           ),
-//         ],
-//       ),
-//       floatingActionButton: FloatingActionButton.extended(
-//         onPressed: () {
-//           Navigator.push(
-//             context,
-//             MaterialPageRoute(builder: (context) => CreateOffersPage()),
-//           );
-//         },
-//         label: Icon(Icons.add,color: Colors.black,),
-//         backgroundColor: Colors.white, // Matching theme
-//       ),
-//     );
-//   }
-// }
-
-
-
-
-
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -211,10 +8,10 @@ import 'create_offers.dart';
 
 String formatDeadline(String dateString) {
   try {
-    DateTime date = DateTime.parse(dateString); // Parse the date
-    return DateFormat('d MMM y').format(date); // Format to "23 Dec 2025"
+    DateTime date = DateTime.parse(dateString);
+    return DateFormat('d MMM y').format(date);
   } catch (e) {
-    return dateString; // Return original if parsing fails
+    return dateString;
   }
 }
 
@@ -223,35 +20,39 @@ class OfferListPage extends StatefulWidget {
   _OfferListPageState createState() => _OfferListPageState();
 }
 
-class _OfferListPageState extends State<OfferListPage> {
-  final DatabaseReference _database =
-  FirebaseDatabase.instance.ref().child("offers");
+class _OfferListPageState extends State<OfferListPage> with SingleTickerProviderStateMixin {
+  final DatabaseReference _database = FirebaseDatabase.instance.ref().child("offers");
   List<Map<String, dynamic>> offers = [];
-
-  final List<Color> boxColors = [
-    Color(0xFF6cd5c6),
-    Color(0xFFfda88b),
-    Color(0xFF9bbef5),
-    Color(0xFFf59fd6),
-    Color(0xFFbba1f1),
-    Color(0xFF8ec7d3),
-    Color(0xFFa0d69a),
-  ];
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 800),
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+    _animationController.forward();
     _fetchChallenges();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchChallenges() async {
     _database.onValue.listen((event) {
       if (event.snapshot.exists) {
-        Map<dynamic, dynamic> challengesData =
-        event.snapshot.value as Map<dynamic, dynamic>;
+        Map<dynamic, dynamic> challengesData = event.snapshot.value as Map<dynamic, dynamic>;
         setState(() {
           offers = challengesData.entries.map((entry) {
-            // Get reaction data if available
             final likedData = entry.value["LikedUsersEmail"] as Map<dynamic, dynamic>?;
             final dislikeData = entry.value["DislikeUsersEmail"] as Map<dynamic, dynamic>?;
 
@@ -262,7 +63,6 @@ class _OfferListPageState extends State<OfferListPage> {
               "coupon": entry.value["coupon"],
               "deadline": entry.value["deadline"],
               "creator": entry.value["creator"],
-              // Store the raw maps for reactions so we can check if the current user has reacted
               "likedEmails": likedData ?? {},
               "dislikedEmails": dislikeData ?? {},
               "likeCount": likedData != null ? likedData.length : 0,
@@ -274,214 +74,364 @@ class _OfferListPageState extends State<OfferListPage> {
     });
   }
 
-  // Method to update like/dislike reaction
   Future<void> _updateReaction(String offerId, String reactionType) async {
     final User? user = FirebaseAuth.instance.currentUser;
     if (user != null && user.email != null) {
       String email = user.email!;
       String node = reactionType == "like" ? "LikedUsersEmail" : "DislikeUsersEmail";
-      DatabaseReference reactionRef =
-      FirebaseDatabase.instance.ref().child("offers").child(offerId).child(node);
+      DatabaseReference reactionRef = FirebaseDatabase.instance.ref().child("offers").child(offerId).child(node);
 
-      // Push the email if it does not already exist
-      // (for simplicity we use push() which does not prevent duplicates; in production you might want to check)
       await reactionRef.push().set(email);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Your $reactionType has been recorded.")),
+        SnackBar(
+          content: Text("Your $reactionType has been recorded."),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+        ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Please log in to react to this offer.")),
+        SnackBar(
+          content: Text("Please log in to react to this offer."),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Get the current user's email (if logged in) to decide icon state.
     final String? currentUserEmail = FirebaseAuth.instance.currentUser?.email;
+    double screenWidth = MediaQuery.of(context).size.width;
+    double paddingValue = screenWidth > 800 ? 80.0 : 24.0;
 
     return Scaffold(
-      backgroundColor: Color(0xffF2F0EF), // Off white
+      backgroundColor: Color(0xFFF8FAFC),
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: Color(0xFF0F172A)),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: Text(
           "Discounts & Offers",
-          style: GoogleFonts.blinker(
-              fontSize: 34, fontWeight: FontWeight.w600, color: Colors.black),
+          style: GoogleFonts.inter(
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF0F172A),
+          ),
         ),
         centerTitle: true,
-        backgroundColor: Color(0xffF2F0EF),
-        elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
       ),
-      body: Column(
-        children: [
-          SizedBox(height: 16),
-          Expanded(
-            child: ListView.builder(
-              itemCount: offers.length,
-              itemBuilder: (context, index) {
-                var offer = offers[index];
+      body: FadeTransition(
+        opacity: _fadeAnimation,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: paddingValue, vertical: 24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Text(
+                "Latest Offers",
+                style: GoogleFonts.inter(
+                  fontSize: screenWidth > 800 ? 36 : 28,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF0F172A),
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                "Discover amazing deals and discounts from local shops",
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  color: Color(0xFF64748B),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              SizedBox(height: 24),
 
-                // Determine if the current user already liked/disliked this offer
-                bool isLiked = currentUserEmail != null &&
-                    offer["likedEmails"].values.contains(currentUserEmail);
-                bool isDisliked = currentUserEmail != null &&
-                    offer["dislikedEmails"].values.contains(currentUserEmail);
+              // Offers List
+              Expanded(
+                child: offers.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.local_offer_outlined, size: 64, color: Colors.grey[300]),
+                            SizedBox(height: 16),
+                            Text(
+                              "No offers available yet",
+                              style: GoogleFonts.inter(
+                                fontSize: 18,
+                                color: Color(0xFF64748B),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: offers.length,
+                        itemBuilder: (context, index) {
+                          var offer = offers[index];
+                          bool isLiked = currentUserEmail != null && offer["likedEmails"].values.contains(currentUserEmail);
+                          bool isDisliked = currentUserEmail != null && offer["dislikedEmails"].values.contains(currentUserEmail);
 
-                return Container(
-                  height: 170,
-                  margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    elevation: 4,
-                    color: boxColors[index % boxColors.length],
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
+                          return Container(
+                            margin: EdgeInsets.only(bottom: 16),
+                            child: TweenAnimationBuilder<double>(
+                              tween: Tween(begin: 0.0, end: 1.0),
+                              duration: Duration(milliseconds: 600 + (index * 100)),
+                              builder: (context, animValue, child) {
+                                return Opacity(
+                                  opacity: animValue,
+                                  child: Transform.translate(
+                                    offset: Offset(0, 20 * (1 - animValue)),
+                                    child: _buildOfferCard(offer, isLiked, isDisliked, screenWidth),
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+          ),
+          borderRadius: BorderRadius.circular(50),
+          boxShadow: [
+            BoxShadow(
+              color: Color(0xFF6366F1).withOpacity(0.4),
+              blurRadius: 20,
+              offset: Offset(0, 8),
+            ),
+          ],
+        ),
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CreateOffersPage()),
+            );
+          },
+          icon: Icon(Icons.add, color: Colors.white),
+          label: Text(
+            "Create Offer",
+            style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: Colors.white),
+          ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOfferCard(Map<String, dynamic> offer, bool isLiked, bool isDisliked, double screenWidth) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0xFF6366F1).withOpacity(0.3),
+            blurRadius: 20,
+            offset: Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(24),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OffersDetailPage(
+                  challengeId: offer["id"],
+                  challenge: offer,
+                ),
+              ),
+            );
+          },
+          child: Padding(
+            padding: EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header Row
+                Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                FittedBox(
-                                  child: Text(
-                                    offer["name"],
-                                    style: GoogleFonts.blinker(
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white),
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                FittedBox(
-                                  child: Text(
-                                    "Created By: ${offer["creator"]}",
-                                    style: GoogleFonts.blinker(
-                                        color: Colors.white,
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                ),
-                                Text(
-                                  "Ends At: ${formatDeadline(offer["deadline"])}",
-                                  style: GoogleFonts.blinker(
-                                      color: Colors.black54,
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                SizedBox(height: 5),
-                                Row(
-                                  children: [
-                                    // Like icon and count
-                                    InkWell(
-                                      onTap: () {
-                                        _updateReaction(offer["id"], "like");
-                                      },
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            // Use filled icon if user has liked; outlined otherwise
-                                            isLiked ? Icons.thumb_up : Icons.thumb_up_alt_outlined,
-                                            color: Colors.white,
-                                          ),
-                                          SizedBox(width: 5),
-                                          Text(
-                                            "${offer["likeCount"]}",
-                                            style: GoogleFonts.blinker(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    SizedBox(width: 20),
-                                    // Dislike icon and count
-                                    InkWell(
-                                      onTap: () {
-                                        _updateReaction(offer["id"], "dislike");
-                                      },
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            // For dislike, keeping the outlined icon for now
-                                            isDisliked ? Icons.thumb_down : Icons.thumb_down_alt_outlined,
-                                            color: Colors.white,
-                                          ),
-                                          SizedBox(width: 5),
-                                          Text(
-                                            "${offer["dislikeCount"]}",
-                                            style: GoogleFonts.blinker(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.grey[100],
-                              foregroundColor: boxColors[index % boxColors.length],
-                            ),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => OffersDetailPage(
-                                    challengeId: offer["id"],
-                                    challenge: offer,
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Text(
-                              "View",
-                              style: GoogleFonts.blinker(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black),
+                          Icon(Icons.local_offer, color: Colors.white, size: 16),
+                          SizedBox(width: 6),
+                          Text(
+                            "Special Offer",
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ],
                       ),
                     ),
+                    Spacer(),
+                    Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(Icons.arrow_forward, color: Colors.white, size: 20),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+
+                // Offer Title
+                Text(
+                  offer["name"],
+                  style: GoogleFonts.inter(
+                    fontSize: screenWidth > 800 ? 28 : 24,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
                   ),
-                );
-              },
+                ),
+                SizedBox(height: 12),
+
+                // Shop Name
+                Row(
+                  children: [
+                    Icon(Icons.store, color: Colors.white.withOpacity(0.9), size: 16),
+                    SizedBox(width: 8),
+                    Text(
+                      offer["creator"],
+                      style: GoogleFonts.inter(
+                        fontSize: 15,
+                        color: Colors.white.withOpacity(0.9),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8),
+
+                // Deadline
+                Row(
+                  children: [
+                    Icon(Icons.calendar_today, color: Colors.white.withOpacity(0.9), size: 16),
+                    SizedBox(width: 8),
+                    Text(
+                      "Valid until ${formatDeadline(offer["deadline"])}",
+                      style: GoogleFonts.inter(
+                        fontSize: 14,
+                        color: Colors.white.withOpacity(0.9),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+
+                // Reactions Row
+                Container(
+                  padding: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      // Like Button
+                      InkWell(
+                        onTap: () => _updateReaction(offer["id"], "like"),
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                isLiked ? Icons.thumb_up : Icons.thumb_up_outlined,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                "${offer["likeCount"]}",
+                                style: GoogleFonts.inter(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 24),
+                      // Dislike Button
+                      InkWell(
+                        onTap: () => _updateReaction(offer["id"], "dislike"),
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                isDisliked ? Icons.thumb_down : Icons.thumb_down_outlined,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                "${offer["dislikeCount"]}",
+                                style: GoogleFonts.inter(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => CreateOffersPage()),
-          );
-        },
-        label: Icon(
-          Icons.add,
-          color: Colors.black,
         ),
-        backgroundColor: Colors.white,
       ),
     );
   }
 }
 
-
-
+// Offers Detail Page
 class OffersDetailPage extends StatefulWidget {
   final String challengeId;
   final Map<String, dynamic> challenge;
@@ -492,470 +442,251 @@ class OffersDetailPage extends StatefulWidget {
   _OffersDetailPageState createState() => _OffersDetailPageState();
 }
 
-class _OffersDetailPageState extends State<OffersDetailPage> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final DatabaseReference _studentsRef =
-  FirebaseDatabase.instance.ref().child("users");
-  final DatabaseReference _challengesRef =
-  FirebaseDatabase.instance.ref().child("offers");
-  List<Map<String, String>> joinedUsers = [];
-  bool _isUserJoined = false; // Track if the user has joined
+class _OffersDetailPageState extends State<OffersDetailPage> with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
-    _fetchJoinedUsers();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 800),
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+    _animationController.forward();
   }
 
-  Future<void> _fetchJoinedUsers() async {
-    User? user = _auth.currentUser;
-    if (user == null) return;
-
-    DatabaseReference joinedUsersRef =
-    _challengesRef.child(widget.challengeId).child("joinedUsers");
-
-    joinedUsersRef.onValue.listen((event) {
-      if (event.snapshot.exists) {
-        List<Map<String, String>> users = [];
-        Map<dynamic, dynamic> usersData =
-        event.snapshot.value as Map<dynamic, dynamic>;
-
-        bool isUserJoined = false; // Track if logged-in user is in the list
-
-        usersData.forEach((key, value) {
-          users.add({"name": value["name"], "email": value["email"]});
-
-          if (value["email"] == user.email) {
-            isUserJoined = true;
-          }
-        });
-
-        setState(() {
-          joinedUsers = users;
-          _isUserJoined = isUserJoined; // Update the state
-        });
-      }
-    });
-  }
-
-  Future<void> _joinChallenge() async {
-    User? user = _auth.currentUser;
-    if (user == null) return;
-
-    DataSnapshot studentsSnapshot = await _studentsRef.get();
-    String? userName;
-
-    if (studentsSnapshot.exists) {
-      Map<dynamic, dynamic> studentsData =
-      studentsSnapshot.value as Map<dynamic, dynamic>;
-      studentsData.forEach((key, student) {
-        if (student["email"] == user.email) {
-          userName = student["name"];
-        }
-      });
-    }
-
-    if (userName == null) return;
-
-    DatabaseReference challengeRef =
-    _challengesRef.child(widget.challengeId).child("joinedUsers");
-
-    DataSnapshot joinedUsersSnapshot = await challengeRef.get();
-    if (joinedUsersSnapshot.exists) {
-      Map<dynamic, dynamic> joinedUsersData =
-      joinedUsersSnapshot.value as Map<dynamic, dynamic>;
-      if (joinedUsersData.values.any((userData) => userData["email"] == user.email)) {
-        return;
-      }
-    }
-
-    await challengeRef.push().set({
-      "name": userName,
-      "email": user.email,
-    });
-
-    _fetchJoinedUsers(); // Refresh list after joining
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double paddingValue = screenWidth > 800 ? 80.0 : 24.0;
+
     return Scaffold(
-      backgroundColor: Color(0xffF2F0EF),
+      backgroundColor: Color(0xFFF8FAFC),
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: Color(0xFF0F172A)),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: Text(
           "Offer Details",
-          style: GoogleFonts.blinker(
-              fontSize: 34, fontWeight: FontWeight.w600, color: Colors.black),
+          style: GoogleFonts.inter(
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF0F172A),
+          ),
         ),
         centerTitle: true,
-        backgroundColor: Color(0xffF2F0EF),
-        elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Card with a scrollable content area
-              SizedBox(
-                width: double.infinity,
-                height: 350,
-                child: Card(
-                  color: Color(0xFFFFFFFF),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
-                  elevation: 5,
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: SingleChildScrollView(
+      body: FadeTransition(
+        opacity: _fadeAnimation,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: paddingValue, vertical: 40.0),
+            child: Center(
+              child: Container(
+                constraints: BoxConstraints(maxWidth: 600),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Offer Header Card
+                    Container(
+                      padding: EdgeInsets.all(32),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color(0xFF6366F1).withOpacity(0.3),
+                            blurRadius: 20,
+                            offset: Offset(0, 8),
+                          ),
+                        ],
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Center(
-                            child: Text(
-                              widget.challenge["name"],
-                              style: GoogleFonts.blinker(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black),
+                          Row(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(Icons.local_offer, color: Colors.white, size: 28),
+                              ),
+                              SizedBox(width: 16),
+                              Expanded(
+                                child: Text(
+                                  widget.challenge["name"],
+                                  style: GoogleFonts.inter(
+                                    fontSize: screenWidth > 800 ? 32 : 26,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 20),
+                          _buildInfoRow(Icons.store, "Shop", widget.challenge["creator"]),
+                          SizedBox(height: 12),
+                          _buildInfoRow(Icons.calendar_today, "Valid Until", formatDeadline(widget.challenge["deadline"])),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 24),
+
+                    // Description Card
+                    Container(
+                      padding: EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(color: Color(0xFFE2E8F0), width: 2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color(0xFF64748B).withOpacity(0.08),
+                            blurRadius: 20,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "About This Offer",
+                            style: GoogleFonts.inter(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF0F172A),
                             ),
                           ),
-                          SizedBox(height: 10),
-                          Text(
-                            "About Offer:",
-                            style: GoogleFonts.blinker(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey[700]),
-                          ),
+                          SizedBox(height: 16),
                           Text(
                             widget.challenge["description"],
-                            style: GoogleFonts.blinker(
-                                fontSize: 16,
-                                color: Colors.black54,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            "Coupon Code:",
-                            style: GoogleFonts.blinker(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey[700]),
-                          ),
-                          Text(
-                            widget.challenge["coupon"],
-                            style: GoogleFonts.blinker(
-                                fontSize: 16,
-                                color: Colors.black54,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            "Ends At: ${formatDeadline(widget.challenge["deadline"])}",
-                            style: GoogleFonts.blinker(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey[700]),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            "Shop Name: ${widget.challenge["creator"]}",
-                            style: GoogleFonts.blinker(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey[700]),
+                            style: GoogleFonts.inter(
+                              fontSize: 16,
+                              color: Color(0xFF64748B),
+                              fontWeight: FontWeight.w500,
+                              height: 1.6,
+                            ),
                           ),
                         ],
                       ),
                     ),
-                  ),
+                    SizedBox(height: 24),
+
+                    // Coupon Code Card
+                    Container(
+                      padding: EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Color(0xFF6366F1).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(color: Color(0xFF6366F1), width: 2),
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.confirmation_number, color: Color(0xFF6366F1), size: 24),
+                              SizedBox(width: 12),
+                              Text(
+                                "Coupon Code",
+                                style: GoogleFonts.inter(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF6366F1),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 16),
+                          Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Color(0xFF6366F1), width: 2, style: BorderStyle.solid),
+                            ),
+                            child: Center(
+                              child: Text(
+                                widget.challenge["coupon"],
+                                style: GoogleFonts.inter(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w900,
+                                  color: Color(0xFF6366F1),
+                                  letterSpacing: 2,
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 12),
+                          Text(
+                            "Use this code at checkout to avail the offer",
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              color: Color(0xFF6366F1),
+                              fontWeight: FontWeight.w500,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(height: 20),
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   children: [
-              //     ElevatedButton(
-              //       onPressed: _joinChallenge,
-              //       style: ElevatedButton.styleFrom(
-              //         backgroundColor: Colors.deepOrangeAccent,
-              //         foregroundColor: Colors.white,
-              //         padding:
-              //         EdgeInsets.symmetric(horizontal: 60, vertical: 15),
-              //         minimumSize: Size(200, 0),
-              //       ),
-              //       child: Text(
-              //         "Join Offer",
-              //         style: GoogleFonts.blinker(
-              //             fontSize: 18,
-              //             fontWeight: FontWeight.bold,
-              //             color: Colors.white),
-              //       ),
-              //     ),
-              //   ],
-              // ),
-              SizedBox(height: 20),
-              //
-              // // Show Chat Button Only If User Has Joined
-              // if (_isUserJoined)
-              //   Row(
-              //     mainAxisAlignment: MainAxisAlignment.center,
-              //     children: [
-              //       ElevatedButton(
-              //         onPressed: () {
-              //           // Navigate to chat screen
-              //           Navigator.push(
-              //             context,
-              //             MaterialPageRoute(
-              //                 builder: (context) => ChatScreenForCommunity(
-              //                   challengeId: widget.challengeId,
-              //                 )),
-              //           );
-              //         },
-              //         style: ElevatedButton.styleFrom(
-              //           backgroundColor: Colors.blue,
-              //           foregroundColor: Colors.white,
-              //           padding:
-              //           EdgeInsets.symmetric(horizontal: 60, vertical: 15),
-              //           minimumSize: Size(200, 0),
-              //         ),
-              //         child: Text(
-              //           "Open Chat",
-              //           style: GoogleFonts.blinker(
-              //               fontSize: 18,
-              //               fontWeight: FontWeight.bold,
-              //               color: Colors.white),
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-
-              // SizedBox(height: 30),
-              // Text(
-              //   "Community Members",
-              //   style: GoogleFonts.blinker(
-              //       fontSize: 26,
-              //       fontWeight: FontWeight.w600,
-              //       color: Colors.black),
-              // ),
-              // SizedBox(height: 10),
-              // ListView.builder(
-              //   shrinkWrap: true,
-              //   itemCount: joinedUsers.length,
-              //   itemBuilder: (context, index) {
-              //     var user = joinedUsers[index];
-              //     return Card(
-              //       color: Colors.white,
-              //       shape: RoundedRectangleBorder(
-              //           borderRadius: BorderRadius.circular(20)),
-              //       margin: EdgeInsets.symmetric(vertical: 5),
-              //       child: ListTile(
-              //         title: Text(user["name"] ?? "Unknown",
-              //             style: GoogleFonts.blinker(
-              //                 fontSize: 22,
-              //                 fontWeight: FontWeight.bold,
-              //                 color: Colors.grey[700])),
-              //         subtitle: Text(user["email"] ?? "No email",
-              //             style: GoogleFonts.blinker(
-              //                 fontSize: 18,
-              //                 fontWeight: FontWeight.w500,
-              //                 color: Colors.black54)),
-              //       ),
-              //     );
-              //   },
-              // ),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
-}
 
-
-
-
-
-
-class ChatScreenForCommunity extends StatefulWidget {
-  final String challengeId;
-  ChatScreenForCommunity({required this.challengeId});
-
-  @override
-  _ChatScreenForCommunityState createState() => _ChatScreenForCommunityState();
-}
-
-class _ChatScreenForCommunityState extends State<ChatScreenForCommunity> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final DatabaseReference _chatRef = FirebaseDatabase.instance.ref();
-  final TextEditingController _messageController = TextEditingController();
-  String? userName;
-  List<Map<String, String>> messages = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchUserName();
-    _listenForMessages();
-  }
-
-  void _fetchUserName() async {
-    User? user = _auth.currentUser;
-    if (user != null) {
-      DatabaseReference studentsRef =
-      FirebaseDatabase.instance.ref().child("students");
-      DataSnapshot snapshot = await studentsRef.get();
-      if (snapshot.exists) {
-        Map<dynamic, dynamic> studentsData =
-        snapshot.value as Map<dynamic, dynamic>;
-        studentsData.forEach((key, student) {
-          if (student["email"] == user.email) {
-            setState(() {
-              userName = student["name"];
-            });
-          }
-        });
-      }
-    }
-  }
-
-  void _listenForMessages() {
-    DatabaseReference chatRef =
-    _chatRef.child("challenges").child(widget.challengeId).child("chat");
-    chatRef.onValue.listen((event) {
-      if (event.snapshot.exists) {
-        List<Map<String, String>> chatMessages = [];
-        Map<dynamic, dynamic> messagesData =
-        event.snapshot.value as Map<dynamic, dynamic>;
-        messagesData.forEach((key, value) {
-          chatMessages.add({
-            "sender": value["sender"],
-            "message": value["message"],
-            "time": value["time"]
-          });
-        });
-
-        chatMessages.sort((a, b) => a["time"]!.compareTo(b["time"]!));
-
-        setState(() {
-          messages = chatMessages;
-        });
-      }
-    });
-  }
-
-  void _sendMessage() async {
-    if (_messageController.text.trim().isEmpty || userName == null) return;
-    User? user = _auth.currentUser;
-    if (user == null) return;
-
-    DatabaseReference chatRef =
-    _chatRef.child("challenges").child(widget.challengeId).child("chat");
-
-    await chatRef.push().set({
-      "sender": userName,
-      "message": _messageController.text.trim(),
-      "time": DateTime.now().toIso8601String(),
-    });
-
-
-    _messageController.clear();
-  }
-
-
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xffF2F0EF), //off white,
-      appBar: AppBar(
-        title: Text(
-          "Community Chat",
-          style: GoogleFonts.blinker(fontSize: 34, fontWeight: FontWeight.w600, color: Colors.black),
+  Widget _buildInfoRow(IconData icon, String label, String value) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.white.withOpacity(0.9), size: 18),
+        SizedBox(width: 12),
+        Text(
+          "$label: ",
+          style: GoogleFonts.inter(
+            fontSize: 15,
+            color: Colors.white.withOpacity(0.9),
+            fontWeight: FontWeight.w600,
+          ),
         ),
-        centerTitle: true,
-        backgroundColor: Color(0xffF2F0EF), //off white
-        elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              reverse: false,
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                var message = messages[index];
-                bool isMe = message["sender"] == userName;
-                return Align(
-                  alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-                  child: Container(
-                    padding: EdgeInsets.all(12),
-                    margin: EdgeInsets.symmetric(vertical: 4, horizontal: 12),
-                    decoration: BoxDecoration(
-                      color: isMe ? Colors.blue.shade400 : Color(0xFF4dc590),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: isMe
-                          ? CrossAxisAlignment.end
-                          : CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          message["sender"]!,
-                          style: GoogleFonts.blinker(
-                              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          message["message"]!,
-                          style: GoogleFonts.blinker(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[100]),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
+        Expanded(
+          child: Text(
+            value,
+            style: GoogleFonts.inter(
+              fontSize: 15,
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
             ),
           ),
-          Padding(
-            padding: EdgeInsets.all(10),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    style:  GoogleFonts.blinker(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[700]),
-                    controller: _messageController,
-                    decoration: InputDecoration(
-                      hintText: "Type a message...",
-                      hintStyle: GoogleFonts.blinker(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[700]),
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: _sendMessage,
-                  style: ElevatedButton.styleFrom(
-                    shape: CircleBorder(),
-                    padding: EdgeInsets.all(14),
-                    backgroundColor: Colors.blueAccent,
-                  ),
-                  child: Icon(Icons.send, color: Colors.white),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

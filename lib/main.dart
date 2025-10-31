@@ -65,9 +65,11 @@ class _MyAppState extends State<MyApp> {
       navigatorKey: _navigatorKey,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.teal,
-          brightness: Brightness.dark,
+          seedColor: Color(0xFF4ECDC4),
+          brightness: Brightness.light,
         ),
+        scaffoldBackgroundColor: Color(0xFFF8F9FA),
+        useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
       title: 'Digi-Local',

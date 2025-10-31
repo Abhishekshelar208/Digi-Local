@@ -647,16 +647,9 @@ class _UsersListPageState extends State<UsersListPage> {
   Map<String, double> distances = {};
   bool isLoadingLocation = true;
 
-  // Professional gradient color scheme
-  final List<List<Color>> gradientColors = [
-    [Color(0xFF2E3192), Color(0xFF1BFFFF)], // Deep Blue to Cyan
-    [Color(0xFF134E5E), Color(0xFF71B280)], // Teal to Green
-    [Color(0xFF000428), Color(0xFF004e92)], // Dark Blue gradient
-    [Color(0xFF232526), Color(0xFF414345)], // Dark Grey gradient
-    [Color(0xFF0F2027), Color(0xFF2C5364)], // Dark Teal gradient
-    [Color(0xFF1e3c72), Color(0xFF2a5298)], // Royal Blue gradient
-    [Color(0xFF141E30), Color(0xFF243B55)], // Navy gradient
-  ];
+  // Single professional color scheme - no gradients needed
+  final Color primaryBlue = Color(0xFF4C6EF5);
+  final Color lightBackground = Color(0xFFF5F7FA);
 
   @override
   void initState() {
@@ -795,29 +788,29 @@ class _UsersListPageState extends State<UsersListPage> {
     });
 
     return Scaffold(
-      backgroundColor: Color(0xffF2F0EF),
+      backgroundColor: Color(0xFFFFFFFF), // Pure White
       appBar: AppBar(
         title: Text(
           widget.category,
-          style: GoogleFonts.blinker(
-              fontSize: 28, fontWeight: FontWeight.w600, color: Colors.black),
+          style: GoogleFonts.poppins(
+              fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF1F2937)),
         ),
         centerTitle: true,
-        backgroundColor: Color(0xffF2F0EF),
+        backgroundColor: Color(0xFFFFFFFF),
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: IconThemeData(color: Color(0xFF4C6EF5)),
         actions: [
           if (isLoadingLocation)
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.black54),
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF4C6EF5)),
+                  ),
                 ),
-              ),
             ),
         ],
       ),
@@ -826,14 +819,14 @@ class _UsersListPageState extends State<UsersListPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.store_outlined, size: 80, color: Colors.grey[400]),
+                  Icon(Icons.store_outlined, size: 80, color: Color(0xFF9CA3AF)),
                   SizedBox(height: 16),
                   Text(
                     "No shops found in this category",
-                    style: GoogleFonts.blinker(
+                    style: GoogleFonts.poppins(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
-                        color: Colors.grey[600]),
+                        color: Color(0xFF6B7280)),
                   ),
                 ],
               ),
@@ -845,33 +838,33 @@ class _UsersListPageState extends State<UsersListPage> {
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   child: Row(
                     children: [
-                      Icon(Icons.store, size: 20, color: Colors.grey[700]),
+                      Icon(Icons.store, size: 20, color: Color(0xFF6B7280)),
                       SizedBox(width: 8),
                       Text(
                         "${sortedUsers.length} ${sortedUsers.length == 1 ? 'Shop' : 'Shops'} Found",
-                        style: GoogleFonts.blinker(
+                        style: GoogleFonts.inter(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: Colors.grey[700]),
+                            color: Color(0xFF1F2937)),
                       ),
                       Spacer(),
                       if (userPosition != null)
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(
-                            color: Color(0xFF2E3192).withOpacity(0.15),
+                            color: Color(0xFF4C6EF5).withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.location_on, size: 14, color: Color(0xFF2E3192)),
+                              Icon(Icons.location_on, size: 14, color: Color(0xFF4C6EF5)),
                               SizedBox(width: 4),
                               Text(
                                 "Sorted by distance",
-                                style: GoogleFonts.blinker(
+                                style: GoogleFonts.inter(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w500,
-                                    color: Color(0xFF2E3192)),
+                                    color: Color(0xFF4C6EF5)),
                               ),
                             ],
                           ),
@@ -903,7 +896,6 @@ class _UsersListPageState extends State<UsersListPage> {
       shopName = user["userData"]["shopInfo"]["shopName"] ?? "";
     }
     double? distance = distances[shopName];
-    List<Color> gradient = gradientColors[index % gradientColors.length];
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -911,9 +903,9 @@ class _UsersListPageState extends State<UsersListPage> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 12,
-            offset: Offset(0, 6),
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 8,
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -933,12 +925,12 @@ class _UsersListPageState extends State<UsersListPage> {
           borderRadius: BorderRadius.circular(20),
           child: Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: gradient,
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: lightBackground, // Soft light background
               borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Color(0xFFE5E7EB), // Light border
+                width: 1,
+              ),
             ),
             child: Column(
               children: [
@@ -952,10 +944,10 @@ class _UsersListPageState extends State<UsersListPage> {
                         child: Container(
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 3),
+                            border: Border.all(color: primaryBlue.withOpacity(0.2), width: 2),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
+                                color: Colors.black.withOpacity(0.05),
                                 blurRadius: 8,
                                 offset: Offset(0, 2),
                               ),
@@ -963,12 +955,8 @@ class _UsersListPageState extends State<UsersListPage> {
                           ),
                           child: CircleAvatar(
                             backgroundColor: Colors.white,
-                            radius: 42,
-                            child: CircleAvatar(
-                              backgroundColor: Color(0xffF2F0EF),
-                              radius: 39,
-                              backgroundImage: NetworkImage(user["profilePicture"]),
-                            ),
+                            radius: 40,
+                            backgroundImage: NetworkImage(user["profilePicture"]),
                           ),
                         ),
                       ),
@@ -980,10 +968,10 @@ class _UsersListPageState extends State<UsersListPage> {
                           children: [
                             Text(
                               user["fullName"],
-                              style: GoogleFonts.blinker(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
+                              style: GoogleFonts.poppins(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF1F2937)),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -991,15 +979,15 @@ class _UsersListPageState extends State<UsersListPage> {
                             Row(
                               children: [
                                 Icon(Icons.category_outlined,
-                                    size: 14, color: Colors.white70),
+                                    size: 14, color: Color(0xFF6B7280)),
                                 SizedBox(width: 4),
                                 Expanded(
                                   child: Text(
                                     user["userTitle"],
-                                    style: GoogleFonts.blinker(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.white70),
+                                    style: GoogleFonts.inter(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w400,
+                                        color: Color(0xFF6B7280)),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -1012,23 +1000,23 @@ class _UsersListPageState extends State<UsersListPage> {
                               padding: EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 6),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.25),
+                                color: primaryBlue.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(Icons.location_on,
-                                      size: 14, color: Colors.white),
+                                      size: 14, color: primaryBlue),
                                   SizedBox(width: 4),
                                   Text(
                                     distance != null
                                         ? "${distance.toStringAsFixed(1)} KM away"
                                         : "Locating...",
-                                    style: GoogleFonts.blinker(
-                                        fontSize: 13,
+                                    style: GoogleFonts.inter(
+                                        fontSize: 12,
                                         fontWeight: FontWeight.w600,
-                                        color: Colors.white),
+                                        color: primaryBlue),
                                   ),
                                 ],
                               ),
@@ -1040,12 +1028,19 @@ class _UsersListPageState extends State<UsersListPage> {
                       // Open button
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          gradient: LinearGradient(
+                            colors: [
+                              Color(0xFF6366F1),
+                              Color(0xFF3B82F6),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              blurRadius: 6,
+                              color: primaryBlue.withOpacity(0.3),
+                              blurRadius: 8,
                               offset: Offset(0, 3),
                             ),
                           ],
@@ -1070,14 +1065,14 @@ class _UsersListPageState extends State<UsersListPage> {
                               child: Column(
                                 children: [
                                   Icon(Icons.arrow_forward,
-                                      color: gradient[0], size: 20),
+                                      color: Colors.white, size: 20),
                                   SizedBox(height: 2),
                                   Text(
                                     "View",
-                                    style: GoogleFonts.blinker(
-                                        fontSize: 12,
+                                    style: GoogleFonts.poppins(
+                                        fontSize: 11,
                                         fontWeight: FontWeight.w600,
-                                        color: gradient[0]),
+                                        color: Colors.white),
                                   ),
                                 ],
                               ),

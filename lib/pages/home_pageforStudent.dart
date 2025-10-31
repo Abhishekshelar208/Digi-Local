@@ -44,20 +44,21 @@ class _HomeScreenForStdudentState extends State<HomeScreenForStdudent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF141528),
+      backgroundColor: const Color(0xFFFFFFFF), // Pure White
       body: _pages[_selectedIndex], // Display the selected page
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF1C2039),
+          color: const Color(0xFFFFFFFF), // Pure White
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(24),
             topRight: Radius.circular(24),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              spreadRadius: 1,
-              blurRadius: 8,
+              color: Colors.black.withOpacity(0.08),
+              spreadRadius: 0,
+              blurRadius: 4,
+              offset: Offset(0, -2),
             ),
           ],
         ),
@@ -65,30 +66,44 @@ class _HomeScreenForStdudentState extends State<HomeScreenForStdudent> {
           type: BottomNavigationBarType.fixed,
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
-          backgroundColor:Color(0xffF2F0EF), //off white
+          backgroundColor: Color(0xFFFFFFFF), // Pure White
           elevation: 0,
-          selectedItemColor: Colors.black, // Selected icon color
-          unselectedItemColor: Colors.black54, // Unselected icon color
+          selectedItemColor: Color(0xFF4C6EF5), // DigiLocal Primary Blue
+          unselectedItemColor: Color(0xFF6B7280), // Muted Gray
           showSelectedLabels: true,
           showUnselectedLabels: true,
-          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
           items: List.generate(5, (index) {
             if (index == 2) {
               // The 3rd button with a circular background
               return BottomNavigationBarItem(
                 icon: Container(
-                  height: 63,
-                  width: 63,
+                  height: 56,
+                  width: 56,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.deepOrangeAccent,
+                    gradient: LinearGradient(
+                      colors: [
+                        Color(0xFF6366F1), // Soft Indigo
+                        Color(0xFF3B82F6), // Vibrant Blue
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0xFF4C6EF5).withOpacity(0.4),
+                        blurRadius: 12,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
                   ),
                   child: Center(
                     child: Image.asset(
                       _getIconForIndex(index),
-                      height: 32,
-                      width: 32,
+                      height: 28,
+                      width: 28,
                       color: Colors.white,
                     ),
                   ),
@@ -103,8 +118,8 @@ class _HomeScreenForStdudentState extends State<HomeScreenForStdudent> {
                   height: 24,
                   width: 24,
                   color: _selectedIndex == index
-                      ? Colors.black // Blue for selected icon
-                      : Colors.black54 // Gray for unselected icon
+                      ? Color(0xFF4C6EF5) // DigiLocal Primary Blue for selected
+                      : Color(0xFF6B7280) // Muted Gray for unselected
                 ),
                 label: _getLabelForIndex(index),
               );
