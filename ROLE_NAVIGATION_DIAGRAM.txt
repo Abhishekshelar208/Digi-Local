@@ -1,0 +1,109 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                    DIGILOCAL AUTHENTICATION FLOW                           ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+                         📱 User Opens App
+                                 │
+                                 ↓
+                    ┌─────────────────────────┐
+                    │  Onboarding Slides      │
+                    │  (3 Beautiful Slides)   │
+                    └─────────────────────────┘
+                                 │
+                                 ↓
+                    ┌─────────────────────────┐
+                    │  "Get Started" Button   │
+                    │  (Last Slide)           │
+                    └─────────────────────────┘
+                                 │
+                                 ↓
+                    ┌─────────────────────────┐
+                    │  Google Sign-In Popup   │
+                    │  🔐 Authenticate        │
+                    └─────────────────────────┘
+                                 │
+                ┌────────────────┴────────────────┐
+                │                                 │
+        ┌───────▼────────┐              ┌────────▼────────┐
+        │  New User?     │              │ Existing User?  │
+        │  (No DB Entry) │              │ (Has DB Entry)  │
+        └───────┬────────┘              └────────┬────────┘
+                │                                 │
+                ↓                                 ↓
+   ┌────────────────────────┐         ┌──────────────────────┐
+   │  ROLE SELECTION DIALOG │         │ Check userRole Field │
+   │                        │         │ from Firebase        │
+   │ ╔═══════════════════╗  │         └──────────┬───────────┘
+   │ ║ 🛍️  Customer      ║  │                    │
+   │ ║ Purple Gradient   ║  │         ┌──────────┴───────────┐
+   │ ╚═══════════════════╝  │         │                      │
+   │                        │    ┌────▼─────┐         ┌─────▼────┐
+   │ ╔═══════════════════╗  │    │ customer │         │shopOwner │
+   │ ║ 🏪  Shop Owner    ║  │    └────┬─────┘         └─────┬────┘
+   │ ║ Pink Gradient     ║  │         │                     │
+   │ ╚═══════════════════╝  │         │              ┌──────▼──────┐
+   │                        │         │              │    both     │
+   │ ╔═══════════════════╗  │         │              └──────┬──────┘
+   │ ║ 👥  Both          ║  │         │                     │
+   │ ║ Blue Gradient     ║  │         │                     ↓
+   │ ╚═══════════════════╝  │         │          ┌──────────────────┐
+   └────────┬───────────────┘         │          │ APP SELECTION    │
+            │                         │          │ DIALOG           │
+   ┌────────┴───────────┐             │          │                  │
+   │                    │             │          │ 🛍️   │   🏪     │
+   │                    │             │          │ Customer│ShopOwner│
+   │                    │             │          └──────┬───┬───────┘
+   │                    │             │                 │   │
+┌──▼───┐  ┌────▼─────┐  ┌──▼───┐    │                 │   │
+│Customer  │ShopOwner │  │ Both │    │                 │   │
+│Role   │  │Role      │  │Role  │    │                 │   │
+└──┬───┘  └────┬─────┘  └──┬───┘    │                 │   │
+   │           │            │        │                 │   │
+   │           │            └────────┼─────────────────┘   │
+   │           │                     │                     │
+   │           │                     │                     │
+   ↓           ↓                     ↓                     ↓
+┌───────────────────────────────────────────────────────────────┐
+│                    NAVIGATION DESTINATIONS                     │
+├───────────────────────────────────────────────────────────────┤
+│                                                               │
+│  📱 CUSTOMER APP                  🏪 SHOP OWNER APP          │
+│  ════════════════                 ═══════════════════         │
+│                                                               │
+│  • Home (Browse Shops)            • Dashboard (Analytics)    │
+│  • Cart (Shopping Cart)           • Orders (Manage Orders)   │
+│  • Orders (Track Orders)          • Products (Add/Edit)      │
+│  • Chats (Customer Support)       • Chats (Customer Msgs)    │
+│  • Profile (Account)              • Shop (Manage Shop)       │
+│                                                               │
+│  OR                               OR                          │
+│                                                               │
+│  🔧 SHOP CREATION FLOW            🔧 SHOP CREATION FLOW      │
+│  (CreateUserID Page)              (CreateUserID Page)        │
+│  For new shop owners              For new shop owners        │
+│                                                               │
+└───────────────────────────────────────────────────────────────┘
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                         ROLE PERSISTENCE                                   ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+Firebase: /users/{userId}/userRole
+
+Values:
+  • "customer"   → Always go to Customer App
+  • "shopOwner"  → Always go to Shop Owner App  
+  • "both"       → Show app selection every time
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                         KEY FEATURES                                       ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+✅ Beautiful gradient UI for role selection
+✅ Automatic navigation for returning users
+✅ Support for dual-role users
+✅ Loading states during authentication
+✅ Error handling with user-friendly messages
+✅ Firebase integration for role persistence
+✅ Clean separation between apps
+

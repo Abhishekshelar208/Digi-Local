@@ -4,6 +4,7 @@ import 'package:digilocal/pages/onlineBookingsForCustomer.dart';
 import 'package:flutter/material.dart';
 import 'package:digilocal/pages/profile.dart';
 
+import '../customer_app/screens/cart/cart_screen.dart';
 import 'ReceivedMessagesScreen.dart';
 import 'all_chats_page.dart';
 import 'offersDisplay_page.dart';
@@ -23,7 +24,7 @@ class _HomeScreenForStdudentState extends State<HomeScreenForStdudent> {
   // List of pages to navigate
   static final List<Widget> _pages = <Widget>[
     HomeScreen(),
-    OfferListPage(),
+    CartScreen(),
     OnlineBookingsForShop(),
     JobsListPage(),
     ProfilePage(),

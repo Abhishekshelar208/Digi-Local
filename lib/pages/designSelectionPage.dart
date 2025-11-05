@@ -4,20 +4,20 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 
-class PortfolioDesignSelectionPage extends StatefulWidget {
+class DesignSelectionPage extends StatefulWidget {
   @override
-  _PortfolioDesignSelectionPageState createState() =>
-      _PortfolioDesignSelectionPageState();
+  _DesignSelectionPageState createState() =>
+      _DesignSelectionPageState();
 }
 
-class _PortfolioDesignSelectionPageState
-    extends State<PortfolioDesignSelectionPage> {
+class _DesignSelectionPageState
+    extends State<DesignSelectionPage> {
   final PageController _pageController = PageController();
   int currentPage = 0;
 
   // List of 7 design URLs
   final List<String> designUrls = [
-    "https://profolio-abhishek-shelar.web.app/#/portfolio/PortFolio000027",
+    "https://digilocal-go-digital-in-minute.web.app//#/shops/Shop000008",
     "https://profolio-abhishek-shelar.web.app/#/portfolio/PortFolio000026",
     "https://profolio-abhishek-shelar.web.app/#/portfolio/PortFolio000013",
     "https://profolio-abhishek-shelar.web.app/#/portfolio/PortFolio000024",

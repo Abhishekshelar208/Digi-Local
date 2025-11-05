@@ -328,7 +328,7 @@ class _ShopListPageState extends State<ShopListPage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => PortfolioDesignSelectionPage()),
+            MaterialPageRoute(builder: (context) => DesignSelectionPage()),
           );
         },
         child: Icon(Icons.add,color: Colors.white,),

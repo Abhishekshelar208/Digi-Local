@@ -135,6 +135,16 @@ class _UserDataPageForAllState extends State<UserDataPageForAll> with SingleTick
 
                 _buildDivider(),
 
+                // 6.5 Featured Products Section
+                if ((widget.userData["Products"] as List?)?.isNotEmpty ?? false) ...[
+                  SizedBox(height: 30),
+                  _buildSectionTitle("Our Featured Products", screenWidth),
+                  SizedBox(height: 30),
+                  _buildFeaturedProductsSection(screenWidth),
+                  SizedBox(height: 50),
+                  _buildDivider(),
+                ],
+
                 // 7. Events Section
                 if ((widget.userData["Events"] as List?)?.isNotEmpty ?? false) ...[
                   SizedBox(height: 30),
@@ -636,6 +646,199 @@ class _UserDataPageForAllState extends State<UserDataPageForAll> with SingleTick
           ),
         );
       }).toList(),
+    );
+  }
+
+  // Featured Products Section
+  Widget _buildFeaturedProductsSection(double screenWidth) {
+    List<dynamic> products = widget.userData["Products"] ?? [];
+    bool isDesktop = screenWidth > 800;
+
+    if (isDesktop) {
+      return GridView.builder(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 25,
+          mainAxisSpacing: 16,
+          childAspectRatio: 0.9,
+        ),
+        itemCount: products.length,
+        itemBuilder: (context, index) {
+          return _buildProductCard(products[index], isDesktop);
+        },
+      );
+    } else {
+      return SizedBox(
+        height: 450,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: products.length,
+          itemBuilder: (context, index) {
+            return Container(
+              width: screenWidth * 0.85,
+              margin: EdgeInsets.only(right: 16),
+              child: _buildProductCard(products[index], isDesktop),
+            );
+          },
+        ),
+      );
+    }
+  }
+
+  Widget _buildProductCard(dynamic product, bool isDesktop) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.white, Color(0xFFFAFAFA)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: Color(0xFFE2E8F0),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0xFF64748B).withOpacity(0.12),
+            blurRadius: 24,
+            offset: Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Product Image
+            if (product["image"] != null && product["image"].isNotEmpty)
+              GestureDetector(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => FullScreenImageView(
+                      imageUrl: product["image"],
+                    ),
+                  );
+                },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.network(
+                    product["image"],
+                    width: double.infinity,
+                    height: isDesktop ? 280 : 200,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      height: isDesktop ? 280 : 200,
+                      color: Colors.grey[100],
+                      child: Icon(
+                        Icons.image_not_supported,
+                        size: 50,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            SizedBox(height: 16),
+            // Product Title
+            Text(
+              product["title"] ?? "No Title",
+              style: GoogleFonts.inter(
+                fontSize: 20,
+                color: Color(0xFF0F172A),
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.5,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            SizedBox(height: 8),
+            // Product Description
+            Text(
+              product["description"] ?? "No Description",
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                color: Color(0xFF64748B),
+                fontWeight: FontWeight.w500,
+                height: 1.5,
+              ),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+            Spacer(),
+            // Product Price
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                "${product["productprice"] ?? "No Price"}",
+                style: GoogleFonts.inter(
+                  fontSize: 18,
+                  color: Color(0xFF0F172A),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            // Buy Now Button
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0xFF6366F1).withOpacity(0.4),
+                    blurRadius: 12,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    final url = product["purchaseLink"] ?? "";
+                    _launchURL(url);
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.shopping_cart, color: Colors.white, size: 18),
+                        SizedBox(width: 8),
+                        Text(
+                          "Buy Now",
+                          style: GoogleFonts.inter(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

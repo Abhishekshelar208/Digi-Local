@@ -174,10 +174,15 @@
 
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart'; // For kIsWeb
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:digilocal/pages/createShops.dart';
+import 'package:digilocal/core/models/user_model.dart';
+import 'package:digilocal/customer_app/navigation/customer_main_screen.dart';
+import 'package:digilocal/shop_owner_app/navigation/owner_main_screen.dart';
+import 'package:digilocal/pages/home_pageforStudent.dart';
 
 class GoogleSignIn extends StatefulWidget {
   const GoogleSignIn({Key? key}) : super(key: key);
@@ -190,6 +195,7 @@ class _GoogleSignInState extends State<GoogleSignIn> {
   bool isLoading = false;
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  UserRole? _selectedRole;
 
   @override
   void dispose() {
@@ -198,6 +204,19 @@ class _GoogleSignInState extends State<GoogleSignIn> {
   }
 
   void _handleGoogleSignIn(BuildContext context) async {
+    // Check if role is selected
+    if (_selectedRole == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Please select your role first"),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+    
+    setState(() => isLoading = true);
     try {
       GoogleAuthProvider googleAuthProvider = GoogleAuthProvider();
       UserCredential? userCredential;
@@ -211,19 +230,390 @@ class _GoogleSignInState extends State<GoogleSignIn> {
       }
       
       if (userCredential.user != null && context.mounted) {
-        // Navigate to the next page after successful sign-in
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CreateUserID(),
-          ),
-        );
+        // Check if user exists in database
+        final userId = userCredential.user!.uid;
+        final userSnapshot = await FirebaseDatabase.instance
+            .ref()
+            .child('users')
+            .child(userId)
+            .get();
+        
+        if (userSnapshot.exists) {
+          // Existing user - navigate based on their role
+          final userData = userSnapshot.value as Map<dynamic, dynamic>;
+          final userRole = _parseUserRole(userData['userRole']);
+          
+          if (context.mounted) {
+            _navigateBasedOnRole(context, userRole);
+          }
+        } else {
+          // New user - save selected role and navigate
+          await _saveUserRole(userCredential.user!, _selectedRole!);
+          if (context.mounted) {
+            _navigateBasedOnRole(context, _selectedRole!);
+          }
+        }
       }
     } catch (error) {
       if (context.mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text("Error: $error")));
       }
+    } finally {
+      if (mounted) {
+        setState(() => isLoading = false);
+      }
+    }
+  }
+
+  UserRole _parseUserRole(dynamic role) {
+    if (role == null) return UserRole.customer;
+    String roleStr = role.toString().toLowerCase();
+    switch (roleStr) {
+      case 'customer':
+        return UserRole.customer;
+      case 'shop_owner':
+      case 'shopowner':
+        return UserRole.shopOwner;
+      case 'both':
+        return UserRole.both;
+      default:
+        return UserRole.customer;
+    }
+  }
+
+  void _navigateBasedOnRole(BuildContext context, UserRole role) {
+    Widget destination;
+    
+    switch (role) {
+      case UserRole.customer:
+        destination = CustomerMainScreen();
+        break;
+      case UserRole.shopOwner:
+        destination = OwnerMainScreen();
+        break;
+      case UserRole.both:
+        // For users with both roles, navigate to HomeScreenForStdudent
+        destination = HomeScreenForStdudent();
+        break;
+    }
+    
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => destination),
+    );
+  }
+
+  void _showRoleSelectionDialog(BuildContext context, User user) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Title
+                Text(
+                  "Welcome to DigiLocal!",
+                  style: GoogleFonts.poppins(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF4C6EF5),
+                  ),
+                ),
+                SizedBox(height: 12),
+                Text(
+                  "How would you like to use the app?",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    color: Colors.grey[700],
+                  ),
+                ),
+                SizedBox(height: 32),
+                // Customer Option
+                _buildRoleCard(
+                  icon: Icons.shopping_bag,
+                  title: "I'm a Customer",
+                  subtitle: "Browse local shops and make purchases",
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF667EEA), Color(0xFF764BA2)],
+                  ),
+                  onTap: () async {
+                    Navigator.of(context).pop();
+                    await _saveUserRole(user, UserRole.customer);
+                    if (context.mounted) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => CustomerMainScreen()),
+                      );
+                    }
+                  },
+                ),
+                SizedBox(height: 16),
+                // Shop Owner Option
+                _buildRoleCard(
+                  icon: Icons.store,
+                  title: "I'm a Shop Owner",
+                  subtitle: "Manage my shop and sell products",
+                  gradient: LinearGradient(
+                    colors: [Color(0xFFF093FB), Color(0xFFF5576C)],
+                  ),
+                  onTap: () async {
+                    Navigator.of(context).pop();
+                    await _saveUserRole(user, UserRole.shopOwner);
+                    if (context.mounted) {
+                      // Navigate to shop creation flow
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => CreateUserID()),
+                      );
+                    }
+                  },
+                ),
+                SizedBox(height: 16),
+                // Both Option
+                _buildRoleCard(
+                  icon: Icons.people,
+                  title: "Both",
+                  subtitle: "I want to shop and manage my business",
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF4FACFE), Color(0xFF00F2FE)],
+                  ),
+                  onTap: () async {
+                    Navigator.of(context).pop();
+                    await _saveUserRole(user, UserRole.both);
+                    if (context.mounted) {
+                      // Show app selection for users with both roles
+                      // _showAppSelectionDialog(context);
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomeScreenForStdudent()),
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showAppSelectionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Choose App",
+                  style: GoogleFonts.poppins(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF4C6EF5),
+                  ),
+                ),
+                SizedBox(height: 12),
+                Text(
+                  "Which app would you like to open?",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    color: Colors.grey[700],
+                  ),
+                ),
+                SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildAppSelectionCard(
+                        icon: Icons.shopping_bag,
+                        title: "Customer",
+                        gradient: LinearGradient(
+                          colors: [Color(0xFF667EEA), Color(0xFF764BA2)],
+                        ),
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => CustomerMainScreen()),
+                          );
+                        },
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: _buildAppSelectionCard(
+                        icon: Icons.store,
+                        title: "Shop Owner",
+                        gradient: LinearGradient(
+                          colors: [Color(0xFFF093FB), Color(0xFFF5576C)],
+                        ),
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => OwnerMainScreen()),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildRoleCard({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Gradient gradient,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: gradient,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: Colors.white, size: 30),
+            ),
+            SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: Colors.white.withOpacity(0.9),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios, color: Colors.white, size: 18),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAppSelectionCard({
+    required IconData icon,
+    required String title,
+    required Gradient gradient,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+        decoration: BoxDecoration(
+          gradient: gradient,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: Colors.white, size: 40),
+            SizedBox(height: 12),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _saveUserRole(User user, UserRole role) async {
+    try {
+      final userRef = FirebaseDatabase.instance.ref().child('users').child(user.uid);
+      
+      // Check if user data already exists
+      final snapshot = await userRef.get();
+      
+      if (!snapshot.exists) {
+        // Create new user with role
+        await userRef.set({
+          'name': user.displayName ?? 'User',
+          'email': user.email ?? '',
+          'phone': user.phoneNumber ?? '',
+          'profilePic': user.photoURL ?? '',
+          'userRole': role.toString().split('.').last,
+          'createdAt': DateTime.now().toIso8601String(),
+        });
+      } else {
+        // Update existing user's role
+        await userRef.update({
+          'userRole': role.toString().split('.').last,
+        });
+      }
+    } catch (error) {
+      print('Error saving user role: $error');
     }
   }
 
@@ -400,10 +790,45 @@ class _GoogleSignInState extends State<GoogleSignIn> {
               ),
             ],
             SizedBox(height: screenHeight * 0.06),
-            // Button
-            if (isLastSlide)
+            // Role Selection and Button
+            if (isLastSlide) ...[
+              // Role Selection Text
+              Text(
+                "Select Your Role",
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 16),
+              // Role Selection Buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildRoleSelectionChip(
+                    icon: Icons.shopping_bag,
+                    label: "Customer",
+                    role: UserRole.customer,
+                  ),
+                  SizedBox(width: 12),
+                  _buildRoleSelectionChip(
+                    icon: Icons.store,
+                    label: "Shop Owner",
+                    role: UserRole.shopOwner,
+                  ),
+                  SizedBox(width: 12),
+                  _buildRoleSelectionChip(
+                    icon: Icons.people,
+                    label: "Both",
+                    role: UserRole.both,
+                  ),
+                ],
+              ),
+              SizedBox(height: 24),
+              // Sign Up Button
               ElevatedButton(
-                onPressed: () {
+                onPressed: isLoading ? null : () {
                   _handleGoogleSignIn(context);
                 },
                 style: ElevatedButton.styleFrom(
@@ -416,22 +841,39 @@ class _GoogleSignInState extends State<GoogleSignIn> {
                   elevation: 8,
                   shadowColor: Colors.black.withOpacity(0.3),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.login, size: 20, color: Color(0xFF4C6EF5)),
-                    SizedBox(width: 10),
-                    Text(
-                      "Get Started",
-                      style: GoogleFonts.poppins(
-                        color: Color(0xFF4C6EF5),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                child: isLoading
+                    ? SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF4C6EF5)),
+                        ),
+                      )
+                    : Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Image.asset(
+                            'lib/assets/images/google.png',
+                            height: 20,
+                            width: 20,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Icon(Icons.login, size: 20, color: Color(0xFF4C6EF5));
+                            },
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            "Sign up with Google",
+                            style: GoogleFonts.poppins(
+                              color: Color(0xFF4C6EF5),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-              )
+              ),
+            ]
             else
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -483,6 +925,60 @@ class _GoogleSignInState extends State<GoogleSignIn> {
                   ),
                 ],
               ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRoleSelectionChip({
+    required IconData icon,
+    required String label,
+    required UserRole role,
+  }) {
+    final isSelected = _selectedRole == role;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedRole = role;
+        });
+      },
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 200),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.white : Colors.white.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected ? Colors.white : Colors.white.withOpacity(0.4),
+            width: 2,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: Colors.white.withOpacity(0.3),
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
+                  ),
+                ]
+              : [],
+        ),
+        child: Column(
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? Color(0xFF4C6EF5) : Colors.white,
+              size: 24,
+            ),
+            SizedBox(height: 4),
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                color: isSelected ? Color(0xFF4C6EF5) : Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ],
         ),
       ),

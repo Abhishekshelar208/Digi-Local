@@ -2,6 +2,9 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'UsersListPage.dart';
+import 'package:digilocal/features/auto_shopper/screens/auto_shopper_screen.dart';
+import 'package:digilocal/features/ai_shopping/ai_shopping_bot.dart';
+import 'package:digilocal/config/api_keys.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -82,6 +85,18 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       print("Error fetching users: $e");
     }
+  }
+
+  void _showAIShoppingDialog() {
+    // Open the previous Auto Shopper screen with Gemini NLP
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AutoShopperScreen(
+          geminiApiKey: ApiKeys.geminiApiKey,
+        ),
+      ),
+    );
   }
 
   bool _isRelatedToCategory(String shopTitle, String category) {
@@ -270,6 +285,18 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _showAIShoppingDialog(),
+        backgroundColor: Color(0xFF4C6EF5),
+        icon: Icon(Icons.smart_toy, color: Colors.white),
+        label: Text(
+          'AI Shopping',
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
     );
   }
