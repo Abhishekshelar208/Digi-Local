@@ -8,7 +8,9 @@ import 'package:digilocal/pages/profile.dart';
 
 import 'home_pageforStudent.dart';
 
-const apiKey = "AIzaSyCQktw7dH6hdRn0PMF1xd2vg238yh9KgPU";
+import 'package:digilocal/config/api_keys.dart';
+
+const apiKey = ApiKeys.geminiApiKey;
 
 class MCQGeneratorScreen extends StatefulWidget {
   final List<String> skillsList;

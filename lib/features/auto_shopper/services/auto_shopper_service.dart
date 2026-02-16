@@ -19,9 +19,20 @@ class AutoShopperService {
   /// Main auto-shopping pipeline
   Future<AutoShopperResult> processQuery(String userQuery) async {
     try {
-      // Step 1: Parse natural language query
-      final parsedQuery = await _nlpService.parseQuery(userQuery);
-      
+      // Step 1: Check for simple query bypass (Optimization)
+      ParsedQuery parsedQuery;
+      if (_isSimpleQuery(userQuery)) {
+        print('⚡️ Simple query detected: Skipping NLP');
+        parsedQuery = ParsedQuery(
+          intent: 'search',
+          product: userQuery,
+          originalQuery: userQuery,
+        );
+      } else {
+        // Complex query: Use Gemini NLP
+        parsedQuery = await _nlpService.parseQuery(userQuery);
+      }
+
       // Debug: Log parsed query
       print('🔍 Parsed Query:');
       print('  Product: ${parsedQuery.product}');
@@ -184,6 +195,26 @@ class AutoShopperService {
       return false;
     }
 
+    return true;
+  }
+
+  /// Check if query is simple enough to skip NLP
+  bool _isSimpleQuery(String query) {
+    final words = query.trim().split(' ');
+    // If more than 3 words, treat as complex
+    if (words.length > 3) return false;
+    
+    // If contains numbers or price keywords, treat as complex
+    final lower = query.toLowerCase();
+    if (lower.contains(RegExp(r'[0-9]')) || 
+        lower.contains('price') || 
+        lower.contains('under') || 
+        lower.contains('cheap') || 
+        lower.contains('best') || 
+        lower.contains('near')) {
+      return false;
+    }
+    
     return true;
   }
 }

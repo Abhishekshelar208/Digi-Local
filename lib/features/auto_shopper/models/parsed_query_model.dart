@@ -73,4 +73,6 @@ class ParsedQuery {
   bool get hasShopName => shopName != null && shopName!.isNotEmpty;
   bool get hasArea => area != null && area!.isNotEmpty;
   bool get hasPreference => preference != null && preference!.isNotEmpty;
+  bool get hasCategory => category != null && category!.isNotEmpty;
+  bool get hasIntent => intent.isNotEmpty;
 }

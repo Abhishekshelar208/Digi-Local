@@ -3,7 +3,6 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'dart:convert';
 import 'package:uuid/uuid.dart';
 
 class ChatPage extends StatefulWidget {
@@ -75,8 +74,16 @@ class _ChatPageState extends State<ChatPage> {
           ? Center(child: CircularProgressIndicator())
           : Chat(
               messages: _messages,
-              onSendPressed: (message) => _sendMessage(message),
+              onSendPressed: _sendMessage,
               user: _currentUser!,
+              chatController: null,
+              currentUserId: _currentUser!.id,
+              resolveUser: (userId) async {
+                if (userId == _currentUser!.id) {
+                  return _currentUser!;
+                }
+                return types.User(id: userId);
+              },
             ),
     );
   }

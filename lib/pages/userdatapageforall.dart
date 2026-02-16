@@ -8,11 +8,22 @@ import 'package:url_launcher/url_launcher.dart';
 import 'AllReviewsPage.dart';
 import 'fullscreenimageview.dart';
 import 'displayServicesGridVise.dart';
+import '../features/shop_chat/screens/shop_chat_screen.dart';
+import '../features/ar_view/screens/ar_view_screen.dart';
 
 class UserDataPageForAll extends StatefulWidget {
   final Map<String, dynamic> userData;
+  final bool aiMode;
+  final int? highlightProductIndex;
+  final VoidCallback? onAINavigationComplete;
 
-  const UserDataPageForAll({super.key, required this.userData});
+  const UserDataPageForAll({
+    super.key, 
+    required this.userData,
+    this.aiMode = false,
+    this.highlightProductIndex,
+    this.onAINavigationComplete,
+  });
 
   @override
   State<UserDataPageForAll> createState() => _UserDataPageForAllState();
@@ -22,6 +33,9 @@ class _UserDataPageForAllState extends State<UserDataPageForAll> with SingleTick
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   bool _isFavorite = false;
+  final ScrollController _scrollController = ScrollController();
+  final ScrollController _productsScrollController = ScrollController();
+  final GlobalKey _featuredProductsKey = GlobalKey();
 
   @override
   void initState() {
@@ -35,11 +49,75 @@ class _UserDataPageForAllState extends State<UserDataPageForAll> with SingleTick
       curve: Curves.easeInOut,
     );
     _animationController.forward();
+    
+    // AI Mode: Auto-scroll to products section
+    if (widget.aiMode) {
+      _startAINavigation();
+    }
+  }
+  
+  Future<void> _startAINavigation() async {
+    // Wait for page to render fully
+    await Future.delayed(const Duration(milliseconds: 1000));
+    
+    // Scroll to "Our Featured Products" section
+    if (_featuredProductsKey.currentContext != null) {
+      await Scrollable.ensureVisible(
+        _featuredProductsKey.currentContext!,
+        duration: const Duration(milliseconds: 1500),
+        curve: Curves.easeInOut,
+      );
+    }
+    
+    // Wait to show the section title before horizontal scroll
+    await Future.delayed(const Duration(milliseconds: 1000));
+    
+    // If specific product index is provided, scroll to that product horizontally
+    if (widget.highlightProductIndex != null) {
+      if (_productsScrollController.hasClients) {
+        final screenWidth = MediaQuery.of(context).size.width;
+        final cardWidth = screenWidth * 0.85 + 16; // Card width + margin
+        final scrollPosition = widget.highlightProductIndex! * cardWidth;
+        
+        await _productsScrollController.animateTo(
+          scrollPosition,
+          duration: const Duration(milliseconds: 1500),
+          curve: Curves.easeInOut,
+        );
+        
+        // Wait to show the product
+        await Future.delayed(const Duration(seconds: 2));
+      }
+    } else {
+      // Just browsing - scroll through ALL products to the end
+      // Wait for ListView to build properly
+      await Future.delayed(const Duration(milliseconds: 500));
+      
+      if (_productsScrollController.hasClients) {
+        final maxScroll = _productsScrollController.position.maxScrollExtent;
+        if (maxScroll > 0) {
+          // Scroll to end slowly so user can see all products
+          await _productsScrollController.animateTo(
+            maxScroll, // Scroll to the END of all products
+            duration: const Duration(milliseconds: 3000), // Slower for visibility
+            curve: Curves.easeInOut,
+          );
+          
+          // Wait at the end
+          await Future.delayed(const Duration(milliseconds: 800));
+        }
+      }
+    }
+    
+    // Notify completion
+    widget.onAINavigationComplete?.call();
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    _scrollController.dispose();
+    _productsScrollController.dispose();
     super.dispose();
   }
 
@@ -93,6 +171,7 @@ class _UserDataPageForAllState extends State<UserDataPageForAll> with SingleTick
       body: FadeTransition(
         opacity: _fadeAnimation,
         child: SingleChildScrollView(
+          controller: _scrollController,
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: paddingValue, vertical: 24.0),
             child: Column(
@@ -138,7 +217,10 @@ class _UserDataPageForAllState extends State<UserDataPageForAll> with SingleTick
                 // 6.5 Featured Products Section
                 if ((widget.userData["Products"] as List?)?.isNotEmpty ?? false) ...[
                   SizedBox(height: 30),
-                  _buildSectionTitle("Our Featured Products", screenWidth),
+                  Container(
+                    key: _featuredProductsKey,
+                    child: _buildSectionTitle("Our Featured Products", screenWidth),
+                  ),
                   SizedBox(height: 30),
                   _buildFeaturedProductsSection(screenWidth),
                   SizedBox(height: 50),
@@ -231,7 +313,7 @@ class _UserDataPageForAllState extends State<UserDataPageForAll> with SingleTick
           ),
         ),
       ),
-      // Floating Action Button - Chat with Shop
+      // Floating Action Button - Chat with Shop AI
       floatingActionButton: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -251,15 +333,15 @@ class _UserDataPageForAllState extends State<UserDataPageForAll> with SingleTick
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => RequestPage(
-                  userId: widget.userData["accountLinks"]["email"],
+                builder: (context) => ShopChatScreen(
+                  shopData: widget.userData,
                 ),
               ),
             );
           },
-          icon: Icon(Icons.chat_bubble_outline, color: Colors.white),
+          icon: Icon(Icons.smart_toy, color: Colors.white),
           label: Text(
-            "Chat",
+            "Ask AI",
             style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: Colors.white),
           ),
           backgroundColor: Colors.transparent,
@@ -674,6 +756,7 @@ class _UserDataPageForAllState extends State<UserDataPageForAll> with SingleTick
       return SizedBox(
         height: 450,
         child: ListView.builder(
+          controller: _productsScrollController,
           scrollDirection: Axis.horizontal,
           itemCount: products.length,
           itemBuilder: (context, index) {
@@ -788,6 +871,59 @@ class _UserDataPageForAllState extends State<UserDataPageForAll> with SingleTick
               ),
             ),
             SizedBox(height: 16),
+            // AR/3D View Button (Condition Based)
+            if (product["modelUrl"] != null && (product["modelUrl"] as String).isNotEmpty)
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFF6366F1), width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF6366F1).withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ARViewScreen(
+                            modelUrl: product["modelUrl"],
+                            productName: product["title"] ?? "Product",
+                          ),
+                        ),
+                      );
+                    },
+                    borderRadius: BorderRadius.circular(12),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.view_in_ar, color: Color(0xFF6366F1), size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            "View in 3D / AR",
+                            style: GoogleFonts.inter(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF6366F1),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             // Buy Now Button
             Container(
               width: double.infinity,

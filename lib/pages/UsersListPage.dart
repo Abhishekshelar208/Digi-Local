@@ -635,8 +635,13 @@ import 'package:firebase_database/firebase_database.dart';
 class UsersListPage extends StatefulWidget {
   final String category;
   final List<Map<String, dynamic>> usersList;
+  final VoidCallback? onShopsLoaded;
 
-  UsersListPage({required this.category, required this.usersList});
+  UsersListPage({
+    required this.category, 
+    required this.usersList,
+    this.onShopsLoaded,
+  });
 
   @override
   _UsersListPageState createState() => _UsersListPageState();
@@ -685,11 +690,17 @@ class _UsersListPageState extends State<UsersListPage> {
         isLoadingLocation = false;
       });
       _calculateDistances();
+      
+      // Notify that shops are loaded and ready
+      widget.onShopsLoaded?.call();
     } catch (e) {
       print("Error fetching user location: $e");
       setState(() {
         isLoadingLocation = false;
       });
+      
+      // Still notify even if location failed - shops can be browsed
+      widget.onShopsLoaded?.call();
     }
   }
 

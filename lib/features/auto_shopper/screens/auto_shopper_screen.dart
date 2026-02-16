@@ -10,7 +10,7 @@ import '../models/navigation_step_model.dart';
 import '../services/auto_shopper_service.dart';
 import '../services/ai_navigation_controller.dart';
 import '../widgets/ai_journey_overlay.dart';
-import 'ai_navigation_screen.dart';
+import 'ai_agent_journey_screen.dart';
 
 class AutoShopperScreen extends StatefulWidget {
   final String geminiApiKey;
@@ -100,28 +100,8 @@ class _AutoShopperScreenState extends State<AutoShopperScreen> {
       return;
     }
 
-    setState(() {
-      _isProcessing = true;
-      _currentResult = null;
-    });
-
-    try {
-      final result = await _autoShopperService.processQuery(_queryController.text);
-      setState(() {
-        _currentResult = result;
-        _currentQuery = ParsedQuery(
-          intent: 'order',
-          product: null,
-          originalQuery: _queryController.text,
-        );
-        _isProcessing = false;
-      });
-    } catch (e) {
-      setState(() {
-        _currentResult = AutoShopperResult.error(e.toString());
-        _isProcessing = false;
-      });
-    }
+    // Immediately start AI Agent Journey without processing
+    await _showAIAgentJourney();
   }
 
   Future<void> _processClarification(String response) async {
@@ -183,19 +163,20 @@ class _AutoShopperScreenState extends State<AutoShopperScreen> {
   Future<void> _startAutoNavigation(ShopCandidate candidate) async {
     if (_currentQuery == null) return;
     
-    // Navigate to REAL navigation screen that shows actual app screens
+    // Show the AI Agent journey instead of instant result
+    await _showAIAgentJourney();
+  }
+  
+  Future<void> _showAIAgentJourney() async {
+    // Navigate to AI Agent Journey Screen
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AINavigationScreen(
-          query: _currentQuery!,
-          targetProduct: candidate,
+        builder: (context) => AIAgentJourneyScreen(
+          query: _queryController.text,
         ),
       ),
     );
-    
-    // After navigation completes, add to cart
-    await _addToCart(candidate);
   }
 
   Future<void> _addToCart(ShopCandidate candidate) async {

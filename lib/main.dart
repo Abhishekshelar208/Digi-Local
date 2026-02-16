@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:digilocal/pages/splash_screen.dart';
 import 'package:digilocal/pages/portfolioDetailLoader.dart';
+
 import 'firebase_options.dart';
 
 const kWindowsScheme = 'sample';
@@ -13,7 +14,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(
-    // options: DefaultFirebaseOptions.currentPlatform,
+    options: DefaultFirebaseOptions.currentPlatform,
   );
 
   runApp(const MyApp());

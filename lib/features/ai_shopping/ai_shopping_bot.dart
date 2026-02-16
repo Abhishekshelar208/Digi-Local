@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_database/firebase_database.dart';
-import '../../pages/UsersListPage.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../pages/userdatapageforall.dart';
 
 /// AI Shopping Bot that physically navigates through app screens

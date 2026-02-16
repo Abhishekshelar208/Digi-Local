@@ -2,13 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:digilocal/pages/home_screen.dart';
 import 'package:digilocal/customer_app/screens/cart/cart_screen.dart';
-import 'package:digilocal/customer_app/screens/orders/orders_list_screen.dart';
-import 'package:digilocal/pages/all_chats_page.dart';
-import 'package:digilocal/customer_app/screens/profile/customer_profile_screen.dart';
 
 import '../../pages/displayJobs.dart';
-import '../../pages/offersDisplay_page.dart';
-import '../../pages/onlineBookingForSHop.dart';
 import '../../pages/onlineBookingsForCustomer.dart';
 import '../../pages/profile.dart';
 

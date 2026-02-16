@@ -3,13 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'UsersListPage.dart';
 import 'package:digilocal/features/auto_shopper/screens/auto_shopper_screen.dart';
-import 'package:digilocal/features/ai_shopping/ai_shopping_bot.dart';
 import 'package:digilocal/config/api_keys.dart';
+
+import 'mcqtest.dart'; // Import FilterUsersPage
 
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
+
+// ... existing code ...
 
 class _HomeScreenState extends State<HomeScreen> {
   final DatabaseReference _databaseRef = FirebaseDatabase.instance.ref("DigiLocal");
@@ -155,6 +158,22 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Color(0xFFFFFFFF),
         elevation: 0,
         iconTheme: IconThemeData(color: Color(0xFF4C6EF5)),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search, size: 28, color: Color(0xFF4C6EF5)),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AutoShopperScreen(
+                    geminiApiKey: ApiKeys.geminiApiKey,
+                  ),
+                ),
+              );
+            },
+          ),
+          SizedBox(width: 10),
+        ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

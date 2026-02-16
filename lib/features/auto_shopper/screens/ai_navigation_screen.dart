@@ -64,14 +64,14 @@ class _AINavigationScreenState extends State<AINavigationScreen> {
     await _fetchShopsFromFirebase(category);
     await Future.delayed(const Duration(milliseconds: 800));
 
-    // Step 4: Open shop list - NAVIGATE TO REAL SCREEN
+    // Step 4: Navigate to shop list
     if (_fetchedShops.isNotEmpty) {
       await _updateStep(4, 'Found ${_fetchedShops.length} shops');
       await Future.delayed(const Duration(milliseconds: 500));
       
-      // REAL NAVIGATION - Navigate to UsersListPage
+      // Navigate to shop list - continuous flow
       if (!mounted) return;
-      await Navigator.push(
+      Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => UsersListPage(
@@ -80,32 +80,42 @@ class _AINavigationScreenState extends State<AINavigationScreen> {
           ),
         ),
       );
-
-      // After coming back from shop list
-      await _updateStep(5, 'Navigated to shop list');
+      
       await Future.delayed(const Duration(seconds: 1));
     }
 
-    // Step 5: Select shop
+    // Step 5: Browse multiple shops in continuous flow
     if (_fetchedShops.isNotEmpty) {
-      _selectedShop = _fetchedShops.first;
-      await _updateStep(5, 'Opening ${_selectedShop!["fullName"]}');
-      await Future.delayed(const Duration(milliseconds: 800));
+      // Visit first 3 shops (or all if less than 3)
+      int shopsToVisit = _fetchedShops.length > 3 ? 3 : _fetchedShops.length;
+      
+      for (int i = 0; i < shopsToVisit; i++) {
+        _selectedShop = _fetchedShops[i];
+        await _updateStep(5, 'Opening ${_selectedShop!["fullName"]} (${i + 1}/$shopsToVisit)');
+        await Future.delayed(const Duration(milliseconds: 800));
 
-      // REAL NAVIGATION - Navigate to shop details
-      if (!mounted) return;
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => UserDataPageForAll(
-            userData: _selectedShop!["userData"],
+        // Navigate to shop details - continuous flow
+        if (!mounted) return;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => UserDataPageForAll(
+              userData: _selectedShop!["userData"],
+            ),
           ),
-        ),
-      );
-
-      // After coming back from shop details
-      await _updateStep(6, 'Navigated to shop details');
-      await Future.delayed(const Duration(seconds: 1));
+        );
+        
+        // Wait a bit to simulate browsing
+        await Future.delayed(const Duration(seconds: 2));
+        
+        // Go back to shop list for next shop
+        if (i < shopsToVisit - 1) {
+          if (!mounted) return;
+          Navigator.pop(context);
+          await _updateStep(5, 'Back to shop list...');
+          await Future.delayed(const Duration(milliseconds: 800));
+        }
+      }
     }
 
     // Step 6: Product found
@@ -121,9 +131,16 @@ class _AINavigationScreenState extends State<AINavigationScreen> {
     await _updateStep(8, 'Successfully added to cart!');
     await Future.delayed(const Duration(seconds: 2));
 
-    // Go back
+    // Go back to home
     if (!mounted) return;
-    Navigator.pop(context);
+    // Pop shop details and shop list to return to home
+    Navigator.pop(context); // Pop current shop
+    await Future.delayed(const Duration(milliseconds: 200));
+    if (!mounted) return;
+    Navigator.pop(context); // Pop shop list
+    await Future.delayed(const Duration(milliseconds: 200));
+    if (!mounted) return;
+    Navigator.pop(context); // Pop AI navigation screen
   }
 
   Future<void> _updateStep(int step, String action) async {

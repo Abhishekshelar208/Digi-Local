@@ -5,6 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:digilocal/pages/userdatapageforall.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:digilocal/config/api_keys.dart';
 
 class FilterUsersPage extends StatefulWidget {
   @override
@@ -31,8 +32,8 @@ class _FilterUsersPageState extends State<FilterUsersPage> {
 
     try {
       final model = GenerativeModel(
-        model: 'gemini-1.5-flash-latest',
-        apiKey: 'AIzaSyCQktw7dH6hdRn0PMF1xd2vg238yh9KgPU', // Replace securely
+        model: 'gemini-1.5-flash',
+        apiKey: ApiKeys.geminiApiKey,
       );
 
       final prompt = """
